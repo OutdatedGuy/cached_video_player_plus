@@ -34,7 +34,7 @@ Import the `cached_video_player_plus` package into your Dart file:
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 ```
 
-### 4. Use the package
+### 4. Using the package (Android & iOS)
 
 #### If you are already using the [video_player] plugin
 
@@ -76,6 +76,27 @@ return Scaffold(
         : const CircularProgressIndicator(),
   ),
 );
+```
+
+### 5. Using the package (Web)
+
+The web platform does not support caching. So, the plugin will use the
+[video_player] plugin for the web platform.
+
+However, to achieve caching on the web platform, you can use the workaround
+of defining `Cache-Control` headers in the `httpHeaders` parameter of the
+`CachedVideoPlayerPlusController.network()` method.
+
+```dart
+final controller = CachedVideoPlayerPlusController.network(
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+  httpHeaders: {
+    "Cache-Control": "max-age=3600",
+  },
+)..initialize().then((value) {
+    controller.play();
+    setState(() {});
+  });
 ```
 
 ## Credits
