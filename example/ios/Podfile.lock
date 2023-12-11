@@ -26,7 +26,7 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  cached_video_player_plus: aa79ef85adb6ddf78e27bdd196c81d19cf989d5b
+  cached_video_player_plus: 5f947b89571b6279c5e7d6732f3b037f08baf85a
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
