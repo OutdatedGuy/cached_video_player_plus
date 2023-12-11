@@ -1,5 +1,5 @@
 PODS:
-  - cached_video_player_plus (1.0.0):
+  - cached_video_player_plus (1.0.1):
     - Flutter
     - KTVHTTPCache (~> 2.0.0)
   - CocoaAsyncSocket (7.6.5)
@@ -26,7 +26,7 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  cached_video_player_plus: 5f947b89571b6279c5e7d6732f3b037f08baf85a
+  cached_video_player_plus: fe0a5c6107940f4dde0c40032e12f42aca0d2479
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d

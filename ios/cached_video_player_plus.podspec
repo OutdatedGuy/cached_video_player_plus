@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'cached_video_player_plus'
-  s.version          = '1.0.0'
+  s.version          = '1.0.1'
   s.summary          = 'Caching enabled video_player plugin for Flutter.'
   s.description      = <<-DESC
 Original video_player plugin with the superpower of caching embedded in Android and iOS.
