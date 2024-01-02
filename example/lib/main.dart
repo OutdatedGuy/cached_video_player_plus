@@ -39,12 +39,25 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    controller = CachedVideoPlayerPlusController.network(
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    )..initialize().then((value) {
+    controller = CachedVideoPlayerPlusController.networkUrl(
+      Uri.parse(
+        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      ),
+      httpHeaders: {
+        'Connection': 'keep-alive',
+      },
+      invalidateCacheIfOlderThan: const Duration(minutes: 10),
+    )..initialize().then((value) async {
+        await controller.setLooping(true);
         controller.play();
         setState(() {});
       });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
