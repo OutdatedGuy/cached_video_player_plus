@@ -1,35 +1,56 @@
-// Dart Packages
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2023 OutdatedGuy. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/// The [video_player](https://pub.dev/packages/video_player) plugin with the
+/// SUPER-POWER of caching using
+/// [flutter_cache_manager](https://pub.dev/packages/flutter_cache_manager).
+library cached_video_player_plus;
+
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
-// Flutter Packages
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-// Third Party Packages
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+
+import 'src/closed_caption_file.dart';
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
 
-import 'src/closed_caption_file.dart';
 export 'src/closed_caption_file.dart';
 
-final _videoPlayerPlatform = VideoPlayerPlatform.instance
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
-  ..init();
+VideoPlayerPlatform? _lastVideoPlayerPlatform;
+
+VideoPlayerPlatform get _videoPlayerPlatform {
+  final VideoPlayerPlatform currentInstance = VideoPlayerPlatform.instance;
+  if (_lastVideoPlayerPlatform != currentInstance) {
+    // This will clear all open videos on the platform when a full restart is
+    // performed.
+    currentInstance.init();
+    _lastVideoPlayerPlatform = currentInstance;
+  }
+  return currentInstance;
+}
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [CachedVideoPlayerPlusController].
+@immutable
 class CachedVideoPlayerPlusValue {
   /// Constructs a video with the given values. Only [duration] is required. The
   /// rest will initialize with default values when unset.
-  CachedVideoPlayerPlusValue({
+  const CachedVideoPlayerPlusValue({
     required this.duration,
     this.size = Size.zero,
     this.position = Duration.zero,
     this.caption = Caption.none,
+    this.captionOffset = Duration.zero,
     this.buffered = const <DurationRange>[],
     this.isInitialized = false,
     this.isPlaying = false,
@@ -37,20 +58,26 @@ class CachedVideoPlayerPlusValue {
     this.isBuffering = false,
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
+    this.rotationCorrection = 0,
     this.errorDescription,
+    this.isCompleted = false,
   });
 
   /// Returns an instance for a video that hasn't been loaded.
-  CachedVideoPlayerPlusValue.uninitialized()
+  const CachedVideoPlayerPlusValue.uninitialized()
       : this(duration: Duration.zero, isInitialized: false);
 
   /// Returns an instance with the given [errorDescription].
-  CachedVideoPlayerPlusValue.erroneous(String errorDescription)
+  const CachedVideoPlayerPlusValue.erroneous(String errorDescription)
       : this(
           duration: Duration.zero,
           isInitialized: false,
           errorDescription: errorDescription,
         );
+
+  /// This constant is just to indicate that parameter is not passed to [copyWith]
+  /// workaround for this issue https://github.com/dart-lang/language/issues/2009
+  static const String _defaultErrorDescription = 'defaultErrorDescription';
 
   /// The total duration of the video.
   ///
@@ -65,6 +92,11 @@ class CachedVideoPlayerPlusValue {
   /// This field will never be null. If there is no caption for the current
   /// [position], this will be a [Caption.none] object.
   final Caption caption;
+
+  /// The [Duration] that should be used to offset the current [position] to get the correct [Caption].
+  ///
+  /// Defaults to Duration.zero.
+  final Duration captionOffset;
 
   /// The currently buffered ranges.
   final List<DurationRange> buffered;
@@ -89,8 +121,17 @@ class CachedVideoPlayerPlusValue {
   /// If [hasError] is false this is `null`.
   final String? errorDescription;
 
+  /// True if video has finished playing to end.
+  ///
+  /// Reverts to false if video position changes, or video begins playing.
+  /// Does not update if video is looping.
+  final bool isCompleted;
+
   /// The [size] of the currently loaded video.
   final Size size;
+
+  /// Degrees to rotate the video (clockwise) so it is displayed correctly.
+  final int rotationCorrection;
 
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
@@ -117,12 +158,13 @@ class CachedVideoPlayerPlusValue {
   }
 
   /// Returns a new instance that has the same values as this current instance,
-  /// except for any overrides passed in as arguments to [copyWidth].
+  /// except for any overrides passed in as arguments to [copyWith].
   CachedVideoPlayerPlusValue copyWith({
     Duration? duration,
     Size? size,
     Duration? position,
     Caption? caption,
+    Duration? captionOffset,
     List<DurationRange>? buffered,
     bool? isInitialized,
     bool? isPlaying,
@@ -130,13 +172,16 @@ class CachedVideoPlayerPlusValue {
     bool? isBuffering,
     double? volume,
     double? playbackSpeed,
-    String? errorDescription,
+    int? rotationCorrection,
+    String? errorDescription = _defaultErrorDescription,
+    bool? isCompleted,
   }) {
     return CachedVideoPlayerPlusValue(
       duration: duration ?? this.duration,
       size: size ?? this.size,
       position: position ?? this.position,
       caption: caption ?? this.caption,
+      captionOffset: captionOffset ?? this.captionOffset,
       buffered: buffered ?? this.buffered,
       isInitialized: isInitialized ?? this.isInitialized,
       isPlaying: isPlaying ?? this.isPlaying,
@@ -144,17 +189,22 @@ class CachedVideoPlayerPlusValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
-      errorDescription: errorDescription ?? this.errorDescription,
+      rotationCorrection: rotationCorrection ?? this.rotationCorrection,
+      errorDescription: errorDescription != _defaultErrorDescription
+          ? errorDescription
+          : this.errorDescription,
+      isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 
   @override
   String toString() {
-    return '$runtimeType('
+    return '${objectRuntimeType(this, 'CachedVideoPlayerPlusValue')}('
         'duration: $duration, '
         'size: $size, '
         'position: $position, '
         'caption: $caption, '
+        'captionOffset: $captionOffset, '
         'buffered: [${buffered.join(', ')}], '
         'isInitialized: $isInitialized, '
         'isPlaying: $isPlaying, '
@@ -162,8 +212,49 @@ class CachedVideoPlayerPlusValue {
         'isBuffering: $isBuffering, '
         'volume: $volume, '
         'playbackSpeed: $playbackSpeed, '
-        'errorDescription: $errorDescription)';
+        'errorDescription: $errorDescription, '
+        'isCompleted: $isCompleted),';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CachedVideoPlayerPlusValue &&
+          runtimeType == other.runtimeType &&
+          duration == other.duration &&
+          position == other.position &&
+          caption == other.caption &&
+          captionOffset == other.captionOffset &&
+          listEquals(buffered, other.buffered) &&
+          isPlaying == other.isPlaying &&
+          isLooping == other.isLooping &&
+          isBuffering == other.isBuffering &&
+          volume == other.volume &&
+          playbackSpeed == other.playbackSpeed &&
+          errorDescription == other.errorDescription &&
+          size == other.size &&
+          rotationCorrection == other.rotationCorrection &&
+          isInitialized == other.isInitialized &&
+          isCompleted == other.isCompleted;
+
+  @override
+  int get hashCode => Object.hash(
+        duration,
+        position,
+        caption,
+        captionOffset,
+        buffered,
+        isPlaying,
+        isLooping,
+        isBuffering,
+        volume,
+        playbackSpeed,
+        errorDescription,
+        size,
+        rotationCorrection,
+        isInitialized,
+        isCompleted,
+      );
 }
 
 /// Controls a platform video player, and provides updates when the state is
@@ -186,53 +277,103 @@ class CachedVideoPlayerPlusController
   CachedVideoPlayerPlusController.asset(
     this.dataSource, {
     this.package,
-    this.closedCaptionFile,
+    Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
-  })  : dataSourceType = DataSourceType.asset,
+  })  : _closedCaptionFileFuture = closedCaptionFile,
+        dataSourceType = DataSourceType.asset,
         formatHint = null,
-        httpHeaders = const {},
-        super(CachedVideoPlayerPlusValue(duration: Duration.zero));
+        httpHeaders = const <String, String>{},
+        invalidateCacheIfOlderThan = const Duration(days: 30),
+        super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
-  /// Constructs a [CachedVideoPlayerPlusController] playing a video from obtained from
-  /// the network.
+  /// Constructs a [CachedVideoPlayerPlusController] playing a network video.
   ///
-  /// The URI for the video is given by the [dataSource] argument and must not be
-  /// null.
+  /// The URI for the video is given by the [dataSource] argument.
+  ///
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
+  ///
   /// [httpHeaders] option allows to specify HTTP headers
   /// for the request to the [dataSource].
+  @Deprecated('Use CachedVideoPlayerPlusController.networkUrl instead')
   CachedVideoPlayerPlusController.network(
     this.dataSource, {
     this.formatHint,
-    this.closedCaptionFile,
+    Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
-    this.httpHeaders = const {},
-  })  : dataSourceType = DataSourceType.network,
+    this.httpHeaders = const <String, String>{},
+    this.invalidateCacheIfOlderThan = const Duration(days: 30),
+  })  : _closedCaptionFileFuture = closedCaptionFile,
+        dataSourceType = DataSourceType.network,
         package = null,
-        super(CachedVideoPlayerPlusValue(duration: Duration.zero));
+        super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
+
+  /// Constructs a [CachedVideoPlayerPlusController] playing a network video.
+  ///
+  /// The URI for the video is given by the [dataSource] argument.
+  ///
+  /// **Android only**: The [formatHint] option allows the caller to override
+  /// the video format detection code.
+  ///
+  /// [httpHeaders] option allows to specify HTTP headers
+  /// for the request to the [dataSource].
+  CachedVideoPlayerPlusController.networkUrl(
+    Uri url, {
+    this.formatHint,
+    Future<ClosedCaptionFile>? closedCaptionFile,
+    this.videoPlayerOptions,
+    this.httpHeaders = const <String, String>{},
+    this.invalidateCacheIfOlderThan = const Duration(days: 30),
+  })  : _closedCaptionFileFuture = closedCaptionFile,
+        dataSource = url.toString(),
+        dataSourceType = DataSourceType.network,
+        package = null,
+        super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
   /// Constructs a [CachedVideoPlayerPlusController] playing a video from a file.
   ///
-  /// This will load the file from the file-URI given by:
-  /// `'file://${file.path}'`.
+  /// This will load the file from a file:// URI constructed from [file]'s path.
+  /// [httpHeaders] option allows to specify HTTP headers, mainly used for hls files like (m3u8).
   CachedVideoPlayerPlusController.file(
     File file, {
-    this.closedCaptionFile,
+    Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
-  })  : dataSource = 'file://${file.path}',
+    this.httpHeaders = const <String, String>{},
+  })  : _closedCaptionFileFuture = closedCaptionFile,
+        dataSource = Uri.file(file.absolute.path).toString(),
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
-        httpHeaders = const {},
-        super(CachedVideoPlayerPlusValue(duration: Duration.zero));
+        invalidateCacheIfOlderThan = const Duration(days: 30),
+        super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
+
+  /// Constructs a [CachedVideoPlayerPlusController] playing a video from a contentUri.
+  ///
+  /// This will load the video from the input content-URI.
+  /// This is supported on Android only.
+  CachedVideoPlayerPlusController.contentUri(
+    Uri contentUri, {
+    Future<ClosedCaptionFile>? closedCaptionFile,
+    this.videoPlayerOptions,
+  })  : assert(
+          defaultTargetPlatform == TargetPlatform.android,
+          'CachedVideoPlayerPlusController.contentUri is only supported on Android.',
+        ),
+        _closedCaptionFileFuture = closedCaptionFile,
+        dataSource = contentUri.toString(),
+        dataSourceType = DataSourceType.contentUri,
+        package = null,
+        formatHint = null,
+        httpHeaders = const <String, String>{},
+        invalidateCacheIfOlderThan = const Duration(days: 30),
+        super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
   final String dataSource;
 
   /// HTTP headers used for the request to the [dataSource].
-  /// Only for [VideoPlayerController.network].
+  /// Only for [CachedVideoPlayerPlusController.network].
   /// Always empty for other video types.
   final Map<String, String> httpHeaders;
 
@@ -250,19 +391,17 @@ class CachedVideoPlayerPlusController
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String? package;
 
-  /// Optional field to specify a file containing the closed
-  /// captioning.
-  ///
-  /// This future will be awaited and the file will be loaded when
-  /// [initialize()] is called.
-  final Future<ClosedCaptionFile>? closedCaptionFile;
+  /// If the requested network video is cached already, checks if the cache is
+  /// older than the provided [Duration] and re-fetches data.
+  final Duration invalidateCacheIfOlderThan;
 
+  Future<ClosedCaptionFile>? _closedCaptionFileFuture;
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
   bool _isDisposed = false;
   Completer<void>? _creatingCompleter;
   StreamSubscription<dynamic>? _eventSubscription;
-  late _CachedVideoAppLifeCycleObserver _lifeCycleObserver;
+  _VideoAppLifeCycleObserver? _lifeCycleObserver;
 
   /// The id of a texture that hasn't been initialized.
   @visibleForTesting
@@ -274,10 +413,90 @@ class CachedVideoPlayerPlusController
   @visibleForTesting
   int get textureId => _textureId;
 
+  /// Return true if caching is supported based on the platform.
+  bool get _isCachingSupported {
+    return !kIsWeb &&
+        [
+          TargetPlatform.android,
+          TargetPlatform.iOS,
+          TargetPlatform.macOS,
+        ].contains(defaultTargetPlatform);
+  }
+
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    _lifeCycleObserver = _CachedVideoAppLifeCycleObserver(this);
-    _lifeCycleObserver.initialize();
+    await GetStorage.init(
+      'cached_video_player_plus',
+    );
+    final storage = GetStorage();
+
+    late String realDataSource;
+    bool isCacheAvailable = false;
+
+    if (dataSourceType == DataSourceType.network && _isCachingSupported) {
+      final cacheManager = DefaultCacheManager();
+      FileInfo? cachedFile = await cacheManager.getFileFromCache(dataSource);
+
+      debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
+
+      if (cachedFile != null) {
+        final cachedElapsedMillis = storage.read(
+          'cached_video_player_plus_video_expiration_of_${Uri.parse(dataSource)}',
+        );
+
+        if (cachedElapsedMillis != null) {
+          final now = DateTime.timestamp();
+          final cachedDate = DateTime.fromMillisecondsSinceEpoch(
+            cachedElapsedMillis,
+          );
+          final difference = now.difference(cachedDate);
+
+          debugPrint(
+            'Cache for [$dataSource] valid till: '
+            '${cachedDate.add(invalidateCacheIfOlderThan)}',
+          );
+
+          if (difference > invalidateCacheIfOlderThan) {
+            debugPrint('Cache of [$dataSource] expired. Removing...');
+            await cacheManager.removeFile(dataSource);
+            cachedFile = null;
+          }
+        } else {
+          debugPrint('Cache of [$dataSource] expired. Removing...');
+          await cacheManager.removeFile(dataSource);
+          cachedFile = null;
+        }
+      }
+
+      if (cachedFile == null) {
+        cacheManager
+            .downloadFile(dataSource, authHeaders: httpHeaders)
+            .then((value) {
+          storage.write(
+            'cached_video_player_plus_video_expiration_of_${Uri.parse(
+              dataSource,
+            )}',
+            DateTime.timestamp().millisecondsSinceEpoch,
+          );
+          debugPrint('Cached video [$dataSource] successfully.');
+        });
+      } else {
+        isCacheAvailable = true;
+      }
+
+      realDataSource = isCacheAvailable
+          ? Uri.file(cachedFile!.file.path).toString()
+          : dataSource;
+    } else {
+      realDataSource = dataSource;
+    }
+
+    final bool allowBackgroundPlayback =
+        videoPlayerOptions?.allowBackgroundPlayback ?? false;
+    if (!allowBackgroundPlayback) {
+      _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
+    }
+    _lifeCycleObserver?.initialize();
     _creatingCompleter = Completer<void>();
 
     late DataSource dataSourceDescription;
@@ -285,14 +504,16 @@ class CachedVideoPlayerPlusController
       case DataSourceType.asset:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.asset,
-          asset: dataSource,
+          asset: realDataSource,
           package: package,
         );
         break;
       case DataSourceType.network:
         dataSourceDescription = DataSource(
-          sourceType: DataSourceType.network,
-          uri: dataSource,
+          sourceType: _isCachingSupported && isCacheAvailable
+              ? DataSourceType.file
+              : DataSourceType.network,
+          uri: realDataSource,
           formatHint: formatHint,
           httpHeaders: httpHeaders,
         );
@@ -300,13 +521,14 @@ class CachedVideoPlayerPlusController
       case DataSourceType.file:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.file,
-          uri: dataSource,
+          uri: realDataSource,
+          httpHeaders: httpHeaders,
         );
         break;
       case DataSourceType.contentUri:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.contentUri,
-          uri: dataSource,
+          uri: realDataSource,
         );
         break;
     }
@@ -332,7 +554,10 @@ class CachedVideoPlayerPlusController
           value = value.copyWith(
             duration: event.duration,
             size: event.size,
+            rotationCorrection: event.rotationCorrection,
             isInitialized: event.duration != null,
+            errorDescription: null,
+            isCompleted: false,
           );
           initializingCompleter.complete(null);
           _applyLooping();
@@ -340,8 +565,12 @@ class CachedVideoPlayerPlusController
           _applyPlayPause();
           break;
         case VideoEventType.completed:
-          value = value.copyWith(isPlaying: false, position: value.duration);
-          _timer?.cancel();
+          // In this case we need to stop _timer, set isPlaying=false, and
+          // position=value.duration. Instead of setting the values directly,
+          // we use pause() and seekTo() to ensure the platform stops playing
+          // and seeks to the last frame of the video.
+          pause().then((void pauseResult) => seekTo(value.duration));
+          value = value.copyWith(isCompleted: true);
           break;
         case VideoEventType.bufferingUpdate:
           value = value.copyWith(buffered: event.buffered);
@@ -352,14 +581,23 @@ class CachedVideoPlayerPlusController
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
           break;
+        case VideoEventType.isPlayingStateUpdate:
+          if (event.isPlaying ?? false) {
+            value = value.copyWith(
+              isPlaying: event.isPlaying,
+              isCompleted: false,
+            );
+          } else {
+            value = value.copyWith(isPlaying: event.isPlaying);
+          }
+          break;
         case VideoEventType.unknown:
           break;
       }
     }
 
-    if (closedCaptionFile != null) {
-      _closedCaptionFile ??= await closedCaptionFile;
-      value = value.copyWith(caption: _getCaptionAt(value.position));
+    if (_closedCaptionFileFuture != null) {
+      await _updateClosedCaptionWithFuture(_closedCaptionFileFuture);
     }
 
     void errorListener(Object obj) {
@@ -379,6 +617,10 @@ class CachedVideoPlayerPlusController
 
   @override
   Future<void> dispose() async {
+    if (_isDisposed) {
+      return;
+    }
+
     if (_creatingCompleter != null) {
       await _creatingCompleter!.future;
       if (!_isDisposed) {
@@ -387,7 +629,7 @@ class CachedVideoPlayerPlusController
         await _eventSubscription?.cancel();
         await _videoPlayerPlatform.dispose(_textureId);
       }
-      _lifeCycleObserver.dispose();
+      _lifeCycleObserver?.dispose();
     }
     _isDisposed = true;
     super.dispose();
@@ -395,10 +637,15 @@ class CachedVideoPlayerPlusController
 
   /// Starts playing the video.
   ///
+  /// If the video is at the end, this method starts playing from the beginning.
+  ///
   /// This method returns a future that completes as soon as the "play" command
   /// has been sent to the platform, not when playback itself is totally
   /// finished.
   Future<void> play() async {
+    if (value.position == value.duration) {
+      await seekTo(Duration.zero);
+    }
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
   }
@@ -417,14 +664,14 @@ class CachedVideoPlayerPlusController
   }
 
   Future<void> _applyLooping() async {
-    if (!value.isInitialized || _isDisposed) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
     await _videoPlayerPlatform.setLooping(_textureId, value.isLooping);
   }
 
   Future<void> _applyPlayPause() async {
-    if (!value.isInitialized || _isDisposed) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
     if (value.isPlaying) {
@@ -457,21 +704,23 @@ class CachedVideoPlayerPlusController
   }
 
   Future<void> _applyVolume() async {
-    if (!value.isInitialized || _isDisposed) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
     await _videoPlayerPlatform.setVolume(_textureId, value.volume);
   }
 
   Future<void> _applyPlaybackSpeed() async {
-    if (!value.isInitialized || _isDisposed) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
 
     // Setting the playback speed on iOS will trigger the video to play. We
     // prevent this from happening by not applying the playback speed until
     // the video is manually played from Flutter.
-    if (!value.isPlaying) return;
+    if (!value.isPlaying) {
+      return;
+    }
 
     await _videoPlayerPlatform.setPlaybackSpeed(
       _textureId,
@@ -484,7 +733,7 @@ class CachedVideoPlayerPlusController
     if (_isDisposed) {
       return null;
     }
-    return await _videoPlayerPlatform.getPosition(_textureId);
+    return _videoPlayerPlatform.getPosition(_textureId);
   }
 
   /// Sets the video's current timestamp to be at [moment]. The next
@@ -493,13 +742,13 @@ class CachedVideoPlayerPlusController
   /// If [moment] is outside of the video's full range it will be automatically
   /// and silently clamped.
   Future<void> seekTo(Duration position) async {
-    if (_isDisposed) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
     if (position > value.duration) {
       position = value.duration;
-    } else if (position < const Duration()) {
-      position = const Duration();
+    } else if (position < Duration.zero) {
+      position = Duration.zero;
     }
     await _videoPlayerPlatform.seekTo(_textureId, position);
     _updatePosition(position);
@@ -548,6 +797,22 @@ class CachedVideoPlayerPlusController
     await _applyPlaybackSpeed();
   }
 
+  /// Sets the caption offset.
+  ///
+  /// The [offset] will be used when getting the correct caption for a specific position.
+  /// The [offset] can be positive or negative.
+  ///
+  /// The values will be handled as follows:
+  /// *  0: This is the default behaviour. No offset will be applied.
+  /// * >0: The caption will have a negative offset. So you will get caption text from the past.
+  /// * <0: The caption will have a positive offset. So you will get caption text from the future.
+  void setCaptionOffset(Duration offset) {
+    value = value.copyWith(
+      captionOffset: offset,
+      caption: _getCaptionAt(value.position),
+    );
+  }
+
   /// The closed caption based on the current [position] in the video.
   ///
   /// If there are no closed captions at the current [position], this will
@@ -560,9 +825,10 @@ class CachedVideoPlayerPlusController
       return Caption.none;
     }
 
-    // TODO: This would be more efficient as a binary search.
-    for (final caption in _closedCaptionFile!.captions) {
-      if (caption.start <= position && caption.end >= position) {
+    final Duration delayedPosition = position + value.captionOffset;
+    // TODO(johnsonmh): This would be more efficient as a binary search.
+    for (final Caption caption in _closedCaptionFile!.captions) {
+      if (caption.start <= delayedPosition && caption.end >= delayedPosition) {
         return caption;
       }
     }
@@ -570,41 +836,72 @@ class CachedVideoPlayerPlusController
     return Caption.none;
   }
 
-  void _updatePosition(Duration position) {
-    value = value.copyWith(position: position);
-    value = value.copyWith(caption: _getCaptionAt(position));
+  /// Returns the file containing closed captions for the video, if any.
+  Future<ClosedCaptionFile>? get closedCaptionFile {
+    return _closedCaptionFileFuture;
   }
+
+  /// Sets a closed caption file.
+  ///
+  /// If [closedCaptionFile] is null, closed captions will be removed.
+  Future<void> setClosedCaptionFile(
+    Future<ClosedCaptionFile>? closedCaptionFile,
+  ) async {
+    await _updateClosedCaptionWithFuture(closedCaptionFile);
+    _closedCaptionFileFuture = closedCaptionFile;
+  }
+
+  Future<void> _updateClosedCaptionWithFuture(
+    Future<ClosedCaptionFile>? closedCaptionFile,
+  ) async {
+    _closedCaptionFile = await closedCaptionFile;
+    value = value.copyWith(caption: _getCaptionAt(value.position));
+  }
+
+  void _updatePosition(Duration position) {
+    value = value.copyWith(
+      position: position,
+      caption: _getCaptionAt(position),
+      isCompleted: position == value.duration,
+    );
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    // Prevent CachedVideoPlayerPlus from causing an exception to be thrown when attempting to
+    // remove its own listener after the controller has already been disposed.
+    if (!_isDisposed) {
+      super.removeListener(listener);
+    }
+  }
+
+  bool get _isDisposedOrNotInitialized => _isDisposed || !value.isInitialized;
 }
 
-class _CachedVideoAppLifeCycleObserver extends Object
-    with WidgetsBindingObserver {
-  _CachedVideoAppLifeCycleObserver(this._controller);
+class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
+  _VideoAppLifeCycleObserver(this._controller);
 
   bool _wasPlayingBeforePause = false;
   final CachedVideoPlayerPlusController _controller;
 
   void initialize() {
-    WidgetsBinding.instance.addObserver(this);
+    _ambiguate(WidgetsBinding.instance)!.addObserver(this);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.paused:
-        _wasPlayingBeforePause = _controller.value.isPlaying;
-        _controller.pause();
-        break;
-      case AppLifecycleState.resumed:
-        if (_wasPlayingBeforePause) {
-          _controller.play();
-        }
-        break;
-      default:
+    if (state == AppLifecycleState.paused) {
+      _wasPlayingBeforePause = _controller.value.isPlaying;
+      _controller.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_wasPlayingBeforePause) {
+        _controller.play();
+      }
     }
   }
 
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    _ambiguate(WidgetsBinding.instance)!.removeObserver(this);
   }
 }
 
@@ -649,9 +946,7 @@ class _CachedVideoPlayerPlusState extends State<CachedVideoPlayerPlus> {
   @override
   void didUpdateWidget(CachedVideoPlayerPlus oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller._isDisposed == false) {
-      oldWidget.controller.removeListener(_listener);
-    }
+    oldWidget.controller.removeListener(_listener);
     _textureId = widget.controller.textureId;
     widget.controller.addListener(_listener);
   }
@@ -666,14 +961,34 @@ class _CachedVideoPlayerPlusState extends State<CachedVideoPlayerPlus> {
   Widget build(BuildContext context) {
     return _textureId == CachedVideoPlayerPlusController.kUninitializedTextureId
         ? Container()
-        : _videoPlayerPlatform.buildView(_textureId);
+        : _CachedVideoPlayerPlusWithRotation(
+            rotation: widget.controller.value.rotationCorrection,
+            child: _videoPlayerPlatform.buildView(_textureId),
+          );
   }
+}
+
+class _CachedVideoPlayerPlusWithRotation extends StatelessWidget {
+  const _CachedVideoPlayerPlusWithRotation({
+    required this.rotation,
+    required this.child,
+  });
+  final int rotation;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => rotation == 0
+      ? child
+      : Transform.rotate(
+          angle: rotation * math.pi / 180,
+          child: child,
+        );
 }
 
 /// Used to configure the [VideoProgressIndicator] widget's colors for how it
 /// describes the video's status.
 ///
-/// The widget uses default colors that are customizeable through this class.
+/// The widget uses default colors that are customizable through this class.
 class VideoProgressColors {
   /// Any property can be set to any color. They each have defaults.
   ///
@@ -710,20 +1025,29 @@ class VideoProgressColors {
   final Color backgroundColor;
 }
 
-class _VideoScrubber extends StatefulWidget {
-  const _VideoScrubber({
+/// A scrubber to control [CachedVideoPlayerPlusController]s
+class VideoScrubber extends StatefulWidget {
+  /// Create a [VideoScrubber] handler with the given [child].
+  ///
+  /// [controller] is the [CachedVideoPlayerPlusController] that will be controlled by
+  /// this scrubber.
+  const VideoScrubber({
+    super.key,
     required this.child,
     required this.controller,
   });
 
+  /// The widget that will be displayed inside the gesture detector.
   final Widget child;
+
+  /// The [CachedVideoPlayerPlusController] that will be controlled by this scrubber.
   final CachedVideoPlayerPlusController controller;
 
   @override
-  _VideoScrubberState createState() => _VideoScrubberState();
+  State<VideoScrubber> createState() => _VideoScrubberState();
 }
 
-class _VideoScrubberState extends State<_VideoScrubber> {
+class _VideoScrubberState extends State<VideoScrubber> {
   bool _controllerWasPlaying = false;
 
   CachedVideoPlayerPlusController get controller => widget.controller;
@@ -731,7 +1055,7 @@ class _VideoScrubberState extends State<_VideoScrubber> {
   @override
   Widget build(BuildContext context) {
     void seekToRelativePosition(Offset globalPosition) {
-      final RenderBox box = context.findRenderObject() as RenderBox;
+      final RenderBox box = context.findRenderObject()! as RenderBox;
       final Offset tapPos = box.globalToLocal(globalPosition);
       final double relative = tapPos.dx / box.size.width;
       final Duration position = controller.value.duration * relative;
@@ -757,7 +1081,8 @@ class _VideoScrubberState extends State<_VideoScrubber> {
         seekToRelativePosition(details.globalPosition);
       },
       onHorizontalDragEnd: (DragEndDetails details) {
-        if (_controllerWasPlaying) {
+        if (_controllerWasPlaying &&
+            controller.value.position != controller.value.duration) {
           controller.play();
         }
       },
@@ -854,7 +1179,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       final int position = controller.value.position.inMilliseconds;
 
       int maxBuffering = 0;
-      for (DurationRange range in controller.value.buffered) {
+      for (final DurationRange range in controller.value.buffered) {
         final int end = range.end.inMilliseconds;
         if (end > maxBuffering) {
           maxBuffering = end;
@@ -878,7 +1203,6 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       );
     } else {
       progressIndicator = LinearProgressIndicator(
-        value: null,
         valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
         backgroundColor: colors.backgroundColor,
       );
@@ -888,7 +1212,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       child: progressIndicator,
     );
     if (widget.allowScrubbing) {
-      return _VideoScrubber(
+      return VideoScrubber(
         controller: controller,
         child: paddedProgressIndicator,
       );
@@ -912,7 +1236,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
 ///
 /// ```dart
 /// Stack(children: <Widget>[
-///   VideoPlayer(_controller),
+///   CachedVideoPlayerPlus(_controller),
 ///   ClosedCaption(text: _controller.value.caption.text),
 /// ]),
 /// ```
@@ -920,11 +1244,12 @@ class ClosedCaption extends StatelessWidget {
   /// Creates a a new closed caption, designed to be used with
   /// [CachedVideoPlayerPlusValue.caption].
   ///
-  /// If [text] is null, nothing will be displayed.
+  /// If [text] is null or empty, nothing will be displayed.
   const ClosedCaption({super.key, this.text, this.textStyle});
 
   /// The text that will be shown in the closed caption, or null if no caption
   /// should be shown.
+  /// If the text is empty the caption will not be shown.
   final String? text;
 
   /// Specifies how the text in the closed caption should look.
@@ -935,15 +1260,16 @@ class ClosedCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String? text = this.text;
+    if (text == null || text.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final TextStyle effectiveTextStyle = textStyle ??
         DefaultTextStyle.of(context).style.copyWith(
               fontSize: 36.0,
               color: Colors.white,
             );
-
-    if (text == null) {
-      return const SizedBox.shrink();
-    }
 
     return Align(
       alignment: Alignment.bottomCenter,
@@ -956,10 +1282,16 @@ class ClosedCaption extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2.0),
-            child: Text(text!, style: effectiveTextStyle),
+            child: Text(text, style: effectiveTextStyle),
           ),
         ),
       ),
     );
   }
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

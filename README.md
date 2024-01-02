@@ -1,7 +1,7 @@
 # Cached Video Player Plus
 
-Original [video_player] plugin with the **SUPER-POWER** of caching embedded in
-Android and iOS platforms.
+The [video_player] plugin with the SUPER-POWER of caching using
+[flutter_cache_manager].
 
 [![pub package][package_svg]][package]
 [![GitHub][license_svg]](LICENSE)
@@ -34,7 +34,7 @@ Import the `cached_video_player_plus` package into your Dart file:
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 ```
 
-### 4. Using the package (Android & iOS)
+### 4. Using the package (Android, iOS & macOS)
 
 #### If you are already using the [video_player] plugin
 
@@ -48,35 +48,41 @@ import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 
 1. Create a `CachedVideoPlayerPlusController` instance and initialize it.
 
-```dart
-final controller = CachedVideoPlayerPlusController.network(
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-)..initialize().then((value) {
-    controller.play();
-    setState(() {});
-  });
-```
+   ```dart
+   final controller = CachedVideoPlayerPlusController.networkUrl(
+     Uri.parse(
+       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+     ),
+     invalidateCacheIfOlderThan: const Duration(days: 69),
+   )..initialize().then((value) async {
+       controller.play();
+       setState(() {});
+     });
+   ```
 
 2. Pass the controller to the `CachedVideoPlayerPlus` widget.
 
-```dart
-CachedVideoPlayerPlus(controller),
-```
+   ```dart
+   CachedVideoPlayerPlus(controller),
+   ```
 
-OR
+   OR
 
-```dart
-return Scaffold(
-  body: Center(
-    child: controller.value.isInitialized
-        ? AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
-            child: CachedVideoPlayerPlus(controller),
-          )
-        : const CircularProgressIndicator(),
-  ),
-);
-```
+   ```dart
+   return Scaffold(
+     body: Center(
+       child: controller.value.isInitialized
+           ? AspectRatio(
+               aspectRatio: controller.value.aspectRatio,
+               child: CachedVideoPlayerPlus(controller),
+             )
+           : const CircularProgressIndicator(),
+     ),
+   );
+   ```
+
+3. Caching is only supported if the `CachedVideoPlayerPlusController`
+   initialization method is `network()` or `networkUrl()`.
 
 ### 5. Using the package (Web)
 
@@ -88,24 +94,34 @@ of defining `Cache-Control` headers in the `httpHeaders` parameter of the
 `CachedVideoPlayerPlusController.network()` method.
 
 ```dart
-final controller = CachedVideoPlayerPlusController.network(
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+final controller = CachedVideoPlayerPlusController.networkUrl(
+  Uri.parse(
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  ),
   httpHeaders: {
-    "Cache-Control": "max-age=3600",
+    'Cache-Control': 'max-age=3600',
   },
-)..initialize().then((value) {
+)..initialize().then((value) async {
     controller.play();
     setState(() {});
   });
 ```
 
-## Credits
+## How does it work?
 
-This package is a cloned and modified version of the [cached_video_player]
-package which is no longer maintained.
+When the `initialize()` method is called, the package checks if the video file
+is cached or not. A video file is identified by its **URL**. If the video file
+is not cached, then it is downloaded and cached. If the video file is cached,
+then it is played from the cache.
 
-The aim of this package is to support the latest version of Flutter with
-AGP 8+ support.
+If the cached video file is older than the specified
+`invalidateCacheIfOlderThan` parameter, then the cached video file is deleted
+and a new video file is downloaded and cached.
+
+When cache of a video is not found, the video will be played from the network
+and will be cached in the background to be played from the cache the next time.
+
+### If you liked the package, then please give it a [Like 👍🏼][package] and [Star ⭐][repository]
 
 <!-- Badges URLs -->
 
@@ -117,8 +133,9 @@ AGP 8+ support.
 <!-- Links -->
 
 [package]: https://pub.dev/packages/cached_video_player_plus
+[repository]: https://github.com/OutdatedGuy/cached_video_player_plus
 [issues]: https://github.com/OutdatedGuy/cached_video_player_plus/issues
 [issues_closed]: https://github.com/OutdatedGuy/cached_video_player_plus/issues?q=is%3Aissue+is%3Aclosed
 [video_player]: https://pub.dev/packages/video_player
+[flutter_cache_manager]: https://pub.dev/packages/flutter_cache_manager
 [instructions]: https://pub.dev/packages/video_player#installation
-[cached_video_player]: https://github.com/vikram25897/flutter_cached_video_player

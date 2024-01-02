@@ -4,8 +4,6 @@ description: "Demonstrates how to use the cached_video_player_plus plugin."
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
-
 environment:
   sdk: '>=3.2.3 <4.0.0'
 
