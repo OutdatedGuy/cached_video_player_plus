@@ -286,6 +286,7 @@ class CachedVideoPlayerPlusController
         formatHint = null,
         httpHeaders = const <String, String>{},
         invalidateCacheIfOlderThan = const Duration(days: 30),
+        skipCache = false,
         super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
   /// Constructs a [CachedVideoPlayerPlusController] playing a network video.
@@ -305,6 +306,7 @@ class CachedVideoPlayerPlusController
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
     this.invalidateCacheIfOlderThan = const Duration(days: 30),
+    this.skipCache = false,
   })  : _closedCaptionFileFuture = closedCaptionFile,
         dataSourceType = DataSourceType.network,
         package = null,
@@ -326,6 +328,7 @@ class CachedVideoPlayerPlusController
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
     this.invalidateCacheIfOlderThan = const Duration(days: 30),
+    this.skipCache = false,
   })  : _closedCaptionFileFuture = closedCaptionFile,
         dataSource = url.toString(),
         dataSourceType = DataSourceType.network,
@@ -347,6 +350,7 @@ class CachedVideoPlayerPlusController
         package = null,
         formatHint = null,
         invalidateCacheIfOlderThan = const Duration(days: 30),
+        skipCache = false,
         super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
   /// Constructs a [CachedVideoPlayerPlusController] playing a video from a contentUri.
@@ -368,6 +372,7 @@ class CachedVideoPlayerPlusController
         formatHint = null,
         httpHeaders = const <String, String>{},
         invalidateCacheIfOlderThan = const Duration(days: 30),
+        skipCache = false,
         super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
   /// The URI to the video file. This will be in different formats depending on
@@ -397,6 +402,9 @@ class CachedVideoPlayerPlusController
   /// older than the provided [Duration] and re-fetches data.
   final Duration invalidateCacheIfOlderThan;
 
+  /// To provide a way to skip the cache
+  final bool skipCache;
+
   Future<ClosedCaptionFile>? _closedCaptionFileFuture;
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
@@ -404,6 +412,8 @@ class CachedVideoPlayerPlusController
   Completer<void>? _creatingCompleter;
   StreamSubscription<dynamic>? _eventSubscription;
   _VideoAppLifeCycleObserver? _lifeCycleObserver;
+  final CacheManager _cacheManager = DefaultCacheManager();
+  final GetStorage _storage = GetStorage();
 
   /// The id of a texture that hasn't been initialized.
   @visibleForTesting
@@ -417,12 +427,35 @@ class CachedVideoPlayerPlusController
 
   /// Return true if caching is supported based on the platform.
   bool get _isCachingSupported {
+    if (skipCache) return false;
     return !kIsWeb &&
         [
           TargetPlatform.android,
           TargetPlatform.iOS,
           TargetPlatform.macOS,
         ].contains(defaultTargetPlatform);
+  }
+
+  /// This will return if video player has disposed or not
+  bool get isDisposed => _isDisposed;
+
+  /// This will remove cached file from cache, if not key then it will remove current data source
+  Future<void> removeFileFromCache({String? key}) async {
+    FileInfo? cachedFile =
+        await _cacheManager.getFileFromCache(key ?? dataSource);
+    if (cachedFile != null) {
+      await _cacheManager.removeFile(key ?? dataSource);
+      await _storage
+          .remove('cached_video_player_plus_video_expiration_of_${Uri.parse(
+        (key ?? dataSource),
+      )}');
+    }
+  }
+
+  /// This will clear all cache
+  Future<void> clearCache() async {
+    await _cacheManager.emptyCache();
+    await _storage.erase();
   }
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
@@ -442,7 +475,7 @@ class CachedVideoPlayerPlusController
       debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
 
       if (cachedFile != null) {
-        final cachedElapsedMillis = storage.read(
+        final cachedElapsedMillis = _storage.read(
           'cached_video_player_plus_video_expiration_of_${Uri.parse(dataSource)}',
         );
 
@@ -869,6 +902,15 @@ class CachedVideoPlayerPlusController
     // remove its own listener after the controller has already been disposed.
     if (!_isDisposed) {
       super.removeListener(listener);
+    }
+  }
+
+  @override
+  void addListener(VoidCallback listener) {
+    // Prevent CachedVideoPlayerPlus from causing an exception to be thrown when attempting to
+    // add a listener after the controller has already been disposed.
+    if (!_isDisposed) {
+      super.addListener(listener);
     }
   }
 
