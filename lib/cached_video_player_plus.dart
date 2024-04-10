@@ -22,7 +22,7 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 import 'src/closed_caption_file.dart';
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
+    show DataSourceType, DurationRange, VideoFormat, VideoPlayerOptions;
 
 export 'src/closed_caption_file.dart';
 
@@ -373,7 +373,7 @@ class CachedVideoPlayerPlusController
   final String dataSource;
 
   /// HTTP headers used for the request to the [dataSource].
-  /// Only for [CachedVideoPlayerPlusController.network].
+  /// Only for [CachedVideoPlayerPlusController.networkUrl].
   /// Always empty for other video types.
   final Map<String, String> httpHeaders;
 
@@ -507,7 +507,6 @@ class CachedVideoPlayerPlusController
           asset: realDataSource,
           package: package,
         );
-        break;
       case DataSourceType.network:
         dataSourceDescription = DataSource(
           sourceType: _isCachingSupported && isCacheAvailable
@@ -517,20 +516,17 @@ class CachedVideoPlayerPlusController
           formatHint: formatHint,
           httpHeaders: httpHeaders,
         );
-        break;
       case DataSourceType.file:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.file,
           uri: realDataSource,
           httpHeaders: httpHeaders,
         );
-        break;
       case DataSourceType.contentUri:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.contentUri,
           uri: realDataSource,
         );
-        break;
     }
 
     if (videoPlayerOptions?.mixWithOthers != null) {
@@ -563,7 +559,6 @@ class CachedVideoPlayerPlusController
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
-          break;
         case VideoEventType.completed:
           // In this case we need to stop _timer, set isPlaying=false, and
           // position=value.duration. Instead of setting the values directly,
@@ -571,16 +566,12 @@ class CachedVideoPlayerPlusController
           // and seeks to the last frame of the video.
           pause().then((void pauseResult) => seekTo(value.duration));
           value = value.copyWith(isCompleted: true);
-          break;
         case VideoEventType.bufferingUpdate:
           value = value.copyWith(buffered: event.buffered);
-          break;
         case VideoEventType.bufferingStart:
           value = value.copyWith(isBuffering: true);
-          break;
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
-          break;
         case VideoEventType.isPlayingStateUpdate:
           if (event.isPlaying ?? false) {
             value = value.copyWith(
@@ -590,7 +581,6 @@ class CachedVideoPlayerPlusController
           } else {
             value = value.copyWith(isPlaying: event.isPlaying);
           }
-          break;
         case VideoEventType.unknown:
           break;
       }
@@ -885,7 +875,7 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   final CachedVideoPlayerPlusController _controller;
 
   void initialize() {
-    _ambiguate(WidgetsBinding.instance)!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -901,7 +891,7 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   }
 
   void dispose() {
-    _ambiguate(WidgetsBinding.instance)!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
   }
 }
 
@@ -1289,9 +1279,3 @@ class ClosedCaption extends StatelessWidget {
     );
   }
 }
-
-/// This allows a value of type T or T? to be treated as a value of type T?.
-///
-/// We use this so that APIs that have become non-nullable can still be used
-/// with `!` and `?` on the stable branch.
-T? _ambiguate<T>(T? value) => value;
