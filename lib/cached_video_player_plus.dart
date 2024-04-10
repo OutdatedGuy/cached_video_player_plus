@@ -425,10 +425,8 @@ class CachedVideoPlayerPlusController
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    await GetStorage.init(
-      'cached_video_player_plus',
-    );
-    final storage = GetStorage();
+    await GetStorage.init('cached_video_player_plus');
+    final storage = GetStorage('cached_video_player_plus');
 
     late String realDataSource;
     bool isCacheAvailable = false;
