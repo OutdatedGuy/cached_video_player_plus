@@ -20,6 +20,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 import 'src/closed_caption_file.dart';
+import 'src/video_cache_manager.dart';
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show DataSourceType, DurationRange, VideoFormat, VideoPlayerOptions;
@@ -432,7 +433,7 @@ class CachedVideoPlayerPlusController
     bool isCacheAvailable = false;
 
     if (dataSourceType == DataSourceType.network && _isCachingSupported) {
-      final cacheManager = DefaultCacheManager();
+      final cacheManager = VideoCacheManager();
       FileInfo? cachedFile = await cacheManager.getFileFromCache(dataSource);
 
       debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
