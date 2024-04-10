@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 aspectRatio: controller.value.aspectRatio,
                 child: CachedVideoPlayerPlus(controller),
               )
-            : const CircularProgressIndicator(),
+            : const CircularProgressIndicator.adaptive(),
       ),
     );
   }
