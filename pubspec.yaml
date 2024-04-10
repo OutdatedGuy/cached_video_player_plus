@@ -5,8 +5,8 @@ homepage: https://outdatedguy.rocks
 repository: https://github.com/OutdatedGuy/cached_video_player_plus
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
-  flutter: '>=3.10.0'
+  sdk: '>=3.3.3 <4.0.0'
+  flutter: '>=3.3.0'
 
 dependencies:
   flutter:
