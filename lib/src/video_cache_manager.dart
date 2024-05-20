@@ -5,7 +5,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 /// using the [cached_video_player_plus] package.
 ///
 /// [cached_video_player_plus]: https://pub.dev/packages/cached_video_player_plus
-class VideoCacheManager extends CacheManager with ImageCacheManager {
+class VideoCacheManager extends CacheManager {
   /// The key used to store the [VideoCacheManager] in the [CacheManager].
   static const key = 'libCachedVideoPlayerPlusData';
 
