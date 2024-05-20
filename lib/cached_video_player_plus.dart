@@ -10,6 +10,7 @@ library cached_video_player_plus;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -434,7 +435,9 @@ class CachedVideoPlayerPlusController
 
     if (dataSourceType == DataSourceType.network && _isCachingSupported) {
       final cacheManager = VideoCacheManager();
-      FileInfo? cachedFile = await cacheManager.getFileFromCache(dataSource);
+      FileInfo? cachedFile = await Isolate.run(() {
+        return cacheManager.getFileFromCache(dataSource);
+      });
 
       debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
 
@@ -457,27 +460,32 @@ class CachedVideoPlayerPlusController
 
           if (difference > invalidateCacheIfOlderThan) {
             debugPrint('Cache of [$dataSource] expired. Removing...');
-            await cacheManager.removeFile(dataSource);
+            await Isolate.run(() {
+              return cacheManager.removeFile(dataSource);
+            });
             cachedFile = null;
           }
         } else {
           debugPrint('Cache of [$dataSource] expired. Removing...');
-          await cacheManager.removeFile(dataSource);
+          await Isolate.run(() {
+            return cacheManager.removeFile(dataSource);
+          });
           cachedFile = null;
         }
       }
 
       if (cachedFile == null) {
-        cacheManager
-            .downloadFile(dataSource, authHeaders: httpHeaders)
-            .then((value) {
-          storage.write(
-            'cached_video_player_plus_video_expiration_of_${Uri.parse(
-              dataSource,
-            )}',
-            DateTime.timestamp().millisecondsSinceEpoch,
-          );
-          debugPrint('Cached video [$dataSource] successfully.');
+        Isolate.run(() async {
+          await cacheManager
+              .downloadFile(dataSource, authHeaders: httpHeaders)
+              .then((_) {
+            storage.write(
+              'cached_video_player_plus_video_expiration_of_'
+              '${Uri.parse(dataSource)}',
+              DateTime.timestamp().millisecondsSinceEpoch,
+            );
+            debugPrint('Cached video [$dataSource] successfully.');
+          });
         });
       } else {
         isCacheAvailable = true;

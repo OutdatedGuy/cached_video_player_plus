@@ -13,9 +13,7 @@ class VideoCacheManager extends CacheManager with ImageCacheManager {
   static final VideoCacheManager _instance = VideoCacheManager._();
 
   /// Returns the singleton instance of the [VideoCacheManager].
-  factory VideoCacheManager() {
-    return _instance;
-  }
+  factory VideoCacheManager() => _instance;
 
   /// Creates a new instance of the [VideoCacheManager].
   VideoCacheManager._() : super(Config(key));
