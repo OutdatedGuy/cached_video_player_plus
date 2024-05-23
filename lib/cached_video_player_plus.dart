@@ -435,7 +435,7 @@ class CachedVideoPlayerPlusController
         ].contains(defaultTargetPlatform);
   }
 
-  /// Return true if caching is supported and [_skipCache] is false.
+  /// Return true if caching is supported and [skipCache] is false.
   bool get _shouldUseCache => _isCachingSupported && !skipCache;
 
   String _getCacheKey(String dataSource) {
