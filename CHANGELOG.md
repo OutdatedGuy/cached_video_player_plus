@@ -1,3 +1,21 @@
+## 3.0.0
+
+**BREAKING CHANGES**
+
+- Using plugin specific cache manager from `flutter_cache_manager`
+- Using plugin specific `get_storage` container for storing cache information
+
+**Features**
+
+- feat: added cache removal support using static method or instance method. Thanks [@chorauoc](https://github.com/chorauoc)
+- feat: option to `skipCache` when initializing the player. Thanks [@chorauoc](https://github.com/chorauoc)
+- perf: using isolates for all file operations for better performance
+
+**Chores**
+
+- chore: updated all dependencies to latest versions
+- chore: updated shared code from `video_player` plugin
+
 ## 2.0.0
 
 **BREAKING CHANGES**
