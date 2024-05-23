@@ -286,6 +286,7 @@ class CachedVideoPlayerPlusController
         formatHint = null,
         httpHeaders = const <String, String>{},
         invalidateCacheIfOlderThan = const Duration(days: 30),
+        skipCache = false,
         super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
   /// Constructs a [CachedVideoPlayerPlusController] playing a network video.
@@ -305,6 +306,7 @@ class CachedVideoPlayerPlusController
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
     this.invalidateCacheIfOlderThan = const Duration(days: 30),
+    this.skipCache = false,
   })  : _closedCaptionFileFuture = closedCaptionFile,
         dataSourceType = DataSourceType.network,
         package = null,
@@ -326,6 +328,7 @@ class CachedVideoPlayerPlusController
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
     this.invalidateCacheIfOlderThan = const Duration(days: 30),
+    this.skipCache = false,
   })  : _closedCaptionFileFuture = closedCaptionFile,
         dataSource = url.toString(),
         dataSourceType = DataSourceType.network,
@@ -347,6 +350,7 @@ class CachedVideoPlayerPlusController
         package = null,
         formatHint = null,
         invalidateCacheIfOlderThan = const Duration(days: 30),
+        skipCache = false,
         super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
   /// Constructs a [CachedVideoPlayerPlusController] playing a video from a contentUri.
@@ -368,6 +372,7 @@ class CachedVideoPlayerPlusController
         formatHint = null,
         httpHeaders = const <String, String>{},
         invalidateCacheIfOlderThan = const Duration(days: 30),
+        skipCache = false,
         super(const CachedVideoPlayerPlusValue(duration: Duration.zero));
 
   /// The URI to the video file. This will be in different formats depending on
@@ -397,6 +402,9 @@ class CachedVideoPlayerPlusController
   /// older than the provided [Duration] and re-fetches data.
   final Duration invalidateCacheIfOlderThan;
 
+  /// If set to true, it will skip the cache and use the video from the network.
+  final bool skipCache;
+
   Future<ClosedCaptionFile>? _closedCaptionFileFuture;
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
@@ -404,6 +412,8 @@ class CachedVideoPlayerPlusController
   Completer<void>? _creatingCompleter;
   StreamSubscription<dynamic>? _eventSubscription;
   _VideoAppLifeCycleObserver? _lifeCycleObserver;
+  final _cacheManager = VideoCacheManager();
+  final _storage = GetStorage('cached_video_player_plus');
 
   /// The id of a texture that hasn't been initialized.
   @visibleForTesting
@@ -425,26 +435,69 @@ class CachedVideoPlayerPlusController
         ].contains(defaultTargetPlatform);
   }
 
+  /// Return true if caching is supported and [skipCache] is false.
+  bool get _shouldUseCache => _isCachingSupported && !skipCache;
+
+  String _getCacheKey(String dataSource) {
+    return 'cached_video_player_plus_video_expiration_of_${Uri.parse(
+      dataSource,
+    )}';
+  }
+
+  /// This will remove cached file from cache of the given [dataSource].
+  Future<void> removeCurrentFileFromCache() async {
+    await Isolate.run(() async {
+      return Future.wait([
+        _cacheManager.removeFile(dataSource),
+        _storage.remove(_getCacheKey(dataSource)),
+      ]);
+    });
+  }
+
+  /// This will remove cached file from cache of the given [url].
+  static Future<void> removeFileFromCache(String url) async {
+    await Isolate.run(() async {
+      final storage = GetStorage('cached_video_player_plus');
+      await storage.initStorage;
+
+      url = Uri.parse(url).toString();
+
+      return Future.wait([
+        VideoCacheManager().removeFile(url),
+        storage.remove('cached_video_player_plus_video_expiration_of_$url'),
+      ]);
+    });
+  }
+
+  /// Clears all cached videos.
+  static Future<void> clearAllCache() async {
+    await Isolate.run(() async {
+      final storage = GetStorage('cached_video_player_plus');
+      await storage.initStorage;
+
+      return Future.wait([
+        VideoCacheManager().emptyCache(),
+        storage.erase(),
+      ]);
+    });
+  }
+
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    await GetStorage.init('cached_video_player_plus');
-    final storage = GetStorage('cached_video_player_plus');
+    await _storage.initStorage;
 
     late String realDataSource;
     bool isCacheAvailable = false;
 
-    if (dataSourceType == DataSourceType.network && _isCachingSupported) {
-      final cacheManager = VideoCacheManager();
+    if (dataSourceType == DataSourceType.network && _shouldUseCache) {
       FileInfo? cachedFile = await Isolate.run(() {
-        return cacheManager.getFileFromCache(dataSource);
+        return _cacheManager.getFileFromCache(dataSource);
       });
 
       debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
 
       if (cachedFile != null) {
-        final cachedElapsedMillis = storage.read(
-          'cached_video_player_plus_video_expiration_of_${Uri.parse(dataSource)}',
-        );
+        final cachedElapsedMillis = _storage.read(_getCacheKey(dataSource));
 
         if (cachedElapsedMillis != null) {
           final now = DateTime.timestamp();
@@ -461,14 +514,14 @@ class CachedVideoPlayerPlusController
           if (difference > invalidateCacheIfOlderThan) {
             debugPrint('Cache of [$dataSource] expired. Removing...');
             await Isolate.run(() {
-              return cacheManager.removeFile(dataSource);
+              return _cacheManager.removeFile(dataSource);
             });
             cachedFile = null;
           }
         } else {
           debugPrint('Cache of [$dataSource] expired. Removing...');
           await Isolate.run(() {
-            return cacheManager.removeFile(dataSource);
+            return _cacheManager.removeFile(dataSource);
           });
           cachedFile = null;
         }
@@ -476,12 +529,11 @@ class CachedVideoPlayerPlusController
 
       if (cachedFile == null) {
         Isolate.run(() async {
-          await cacheManager
+          await _cacheManager
               .downloadFile(dataSource, authHeaders: httpHeaders)
               .then((_) {
-            storage.write(
-              'cached_video_player_plus_video_expiration_of_'
-              '${Uri.parse(dataSource)}',
+            _storage.write(
+              _getCacheKey(dataSource),
               DateTime.timestamp().millisecondsSinceEpoch,
             );
             debugPrint('Cached video [$dataSource] successfully.');
@@ -516,7 +568,7 @@ class CachedVideoPlayerPlusController
         );
       case DataSourceType.network:
         dataSourceDescription = DataSource(
-          sourceType: _isCachingSupported && isCacheAvailable
+          sourceType: _shouldUseCache && isCacheAvailable
               ? DataSourceType.file
               : DataSourceType.network,
           uri: realDataSource,
