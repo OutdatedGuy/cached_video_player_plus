@@ -460,11 +460,11 @@ class CachedVideoPlayerPlusController
       final storage = GetStorage('cached_video_player_plus');
       await storage.initStorage;
 
+      url = Uri.parse(url).toString();
+
       return Future.wait([
         VideoCacheManager().removeFile(url),
-        storage.remove(
-          'cached_video_player_plus_video_expiration_of_${Uri.parse(url)}',
-        ),
+        storage.remove('cached_video_player_plus_video_expiration_of_$url'),
       ]);
     });
   }
