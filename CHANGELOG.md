@@ -1,4 +1,4 @@
-## 3.0.0
+## 3.0.1
 
 **BREAKING CHANGES**
 
@@ -9,12 +9,15 @@
 
 - feat: added cache removal support using static method or instance method. Thanks [@chorauoc](https://github.com/chorauoc)
 - feat: option to `skipCache` when initializing the player. Thanks [@chorauoc](https://github.com/chorauoc)
-- perf: using isolates for all file operations for better performance
 
 **Chores**
 
 - chore: updated all dependencies to latest versions
 - chore: updated shared code from `video_player` plugin
+
+## 3.0.0
+
+### Note: This release was retracted due to [#26](https://github.com/OutdatedGuy/cached_video_player_plus/issues/26)
 
 ## 2.0.0
 
