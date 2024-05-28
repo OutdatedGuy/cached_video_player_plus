@@ -10,7 +10,6 @@ library cached_video_player_plus;
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -259,6 +258,15 @@ class CachedVideoPlayerPlusValue {
       );
 }
 
+final _cacheManager = VideoCacheManager();
+final _storage = GetStorage('cached_video_player_plus');
+
+String _getCacheKey(String dataSource) {
+  return 'cached_video_player_plus_video_expiration_of_${Uri.parse(
+    dataSource,
+  )}';
+}
+
 /// Controls a platform video player, and provides updates when the state is
 /// changing.
 ///
@@ -412,8 +420,6 @@ class CachedVideoPlayerPlusController
   Completer<void>? _creatingCompleter;
   StreamSubscription<dynamic>? _eventSubscription;
   _VideoAppLifeCycleObserver? _lifeCycleObserver;
-  final _cacheManager = VideoCacheManager();
-  final _storage = GetStorage('cached_video_player_plus');
 
   /// The id of a texture that hasn't been initialized.
   @visibleForTesting
@@ -438,48 +444,36 @@ class CachedVideoPlayerPlusController
   /// Return true if caching is supported and [skipCache] is false.
   bool get _shouldUseCache => _isCachingSupported && !skipCache;
 
-  String _getCacheKey(String dataSource) {
-    return 'cached_video_player_plus_video_expiration_of_${Uri.parse(
-      dataSource,
-    )}';
-  }
-
   /// This will remove cached file from cache of the given [dataSource].
   Future<void> removeCurrentFileFromCache() async {
-    await Isolate.run(() async {
-      return Future.wait([
-        _cacheManager.removeFile(dataSource),
-        _storage.remove(_getCacheKey(dataSource)),
-      ]);
-    });
+    await _storage.initStorage;
+
+    await Future.wait([
+      _cacheManager.removeFile(dataSource),
+      _storage.remove(_getCacheKey(dataSource)),
+    ]);
   }
 
   /// This will remove cached file from cache of the given [url].
   static Future<void> removeFileFromCache(String url) async {
-    await Isolate.run(() async {
-      final storage = GetStorage('cached_video_player_plus');
-      await storage.initStorage;
+    await _storage.initStorage;
 
-      url = Uri.parse(url).toString();
+    url = Uri.parse(url).toString();
 
-      return Future.wait([
-        VideoCacheManager().removeFile(url),
-        storage.remove('cached_video_player_plus_video_expiration_of_$url'),
-      ]);
-    });
+    await Future.wait([
+      _cacheManager.removeFile(url),
+      _storage.remove('cached_video_player_plus_video_expiration_of_$url'),
+    ]);
   }
 
   /// Clears all cached videos.
   static Future<void> clearAllCache() async {
-    await Isolate.run(() async {
-      final storage = GetStorage('cached_video_player_plus');
-      await storage.initStorage;
+    await _storage.initStorage;
 
-      return Future.wait([
-        VideoCacheManager().emptyCache(),
-        storage.erase(),
-      ]);
-    });
+    await Future.wait([
+      _cacheManager.emptyCache(),
+      _storage.erase(),
+    ]);
   }
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
@@ -490,9 +484,7 @@ class CachedVideoPlayerPlusController
     bool isCacheAvailable = false;
 
     if (dataSourceType == DataSourceType.network && _shouldUseCache) {
-      FileInfo? cachedFile = await Isolate.run(() {
-        return _cacheManager.getFileFromCache(dataSource);
-      });
+      FileInfo? cachedFile = await _cacheManager.getFileFromCache(dataSource);
 
       debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
 
@@ -513,31 +505,25 @@ class CachedVideoPlayerPlusController
 
           if (difference > invalidateCacheIfOlderThan) {
             debugPrint('Cache of [$dataSource] expired. Removing...');
-            await Isolate.run(() {
-              return _cacheManager.removeFile(dataSource);
-            });
+            await _cacheManager.removeFile(dataSource);
             cachedFile = null;
           }
         } else {
           debugPrint('Cache of [$dataSource] expired. Removing...');
-          await Isolate.run(() {
-            return _cacheManager.removeFile(dataSource);
-          });
+          await _cacheManager.removeFile(dataSource);
           cachedFile = null;
         }
       }
 
       if (cachedFile == null) {
-        Isolate.run(() async {
-          await _cacheManager
-              .downloadFile(dataSource, authHeaders: httpHeaders)
-              .then((_) {
-            _storage.write(
-              _getCacheKey(dataSource),
-              DateTime.timestamp().millisecondsSinceEpoch,
-            );
-            debugPrint('Cached video [$dataSource] successfully.');
-          });
+        _cacheManager
+            .downloadFile(dataSource, authHeaders: httpHeaders)
+            .then((_) {
+          _storage.write(
+            _getCacheKey(dataSource),
+            DateTime.timestamp().millisecondsSinceEpoch,
+          );
+          debugPrint('Cached video [$dataSource] successfully.');
         });
       } else {
         isCacheAvailable = true;
