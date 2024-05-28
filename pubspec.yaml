@@ -1,6 +1,6 @@
 name: cached_video_player_plus
 description: "Original video_player plugin with the superpower of caching embedded in Android, iOS and macOS."
-version: 3.0.0
+version: 3.0.1
 homepage: https://outdatedguy.rocks
 repository: https://github.com/OutdatedGuy/cached_video_player_plus
 
