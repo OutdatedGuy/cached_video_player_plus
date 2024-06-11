@@ -1,3 +1,7 @@
+## 3.0.2
+
+- chore: updated dependency constraints to support lower bounds
+
 ## 3.0.1
 
 **BREAKING CHANGES**
@@ -17,7 +21,7 @@
 
 ## 3.0.0
 
-### Note: This release was retracted due to [#26](https://github.com/OutdatedGuy/cached_video_player_plus/issues/26)
+**NOTE: This release was retracted due to [#26](https://github.com/OutdatedGuy/cached_video_player_plus/issues/26)**
 
 ## 2.0.0
 

@@ -19,7 +19,7 @@ Add the `cached_video_player_plus` package to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  cached_video_player_plus: ^3.0.1
+  cached_video_player_plus: ^3.0.2
 ```
 
 ### 2. Follow the installation instructions
