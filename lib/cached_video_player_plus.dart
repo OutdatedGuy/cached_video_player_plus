@@ -680,6 +680,9 @@ class CachedVideoPlayerPlusController
   Future<void> play() async {
     if (value.position == value.duration) {
       await seekTo(Duration.zero);
+      if (_isDisposed) {
+        return;
+      }
     }
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
@@ -721,7 +724,7 @@ class CachedVideoPlayerPlusController
             return;
           }
           final Duration? newPosition = await position;
-          if (newPosition == null) {
+          if (newPosition == null || _isDisposed) {
             return;
           }
           _updatePosition(newPosition);
@@ -786,6 +789,9 @@ class CachedVideoPlayerPlusController
       position = Duration.zero;
     }
     await _videoPlayerPlatform.seekTo(_textureId, position);
+    if (_isDisposed) {
+      return;
+    }
     _updatePosition(position);
   }
 
@@ -890,6 +896,9 @@ class CachedVideoPlayerPlusController
     Future<ClosedCaptionFile>? closedCaptionFile,
   ) async {
     _closedCaptionFile = await closedCaptionFile;
+    if (_isDisposed) {
+      return;
+    }
     value = value.copyWith(caption: _getCaptionAt(value.position));
   }
 
