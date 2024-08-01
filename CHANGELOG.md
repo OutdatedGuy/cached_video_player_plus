@@ -1,3 +1,7 @@
+## 3.0.3
+
+- refactor: lowered sdk constraints to support dart 3.0.0 and above
+
 ## 3.0.2
 
 - chore: updated dependency constraints to support lower bounds
