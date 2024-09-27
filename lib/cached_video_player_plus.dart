@@ -16,7 +16,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 import 'src/closed_caption_file.dart';
@@ -258,9 +257,7 @@ class CachedVideoPlayerPlusValue {
       );
 }
 
-final _storage = GetStorage('cached_video_player_plus');
-
-String _getCacheKey(String dataSource) {
+String _generateKey(String dataSource) {
   return 'cached_video_player_plus_video_expiration_of_${Uri.parse(dataSource)}';
 }
 
@@ -287,8 +284,9 @@ class CachedVideoPlayerPlusController
     Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
     BaseCacheManager? cacheManager,
-    this.cacheKey,
-  })  : _closedCaptionFileFuture = closedCaptionFile,
+    String? cacheKey,
+  })  : _cacheKey = cacheKey,
+        _closedCaptionFileFuture = closedCaptionFile,
         dataSourceType = DataSourceType.asset,
         formatHint = null,
         httpHeaders = const <String, String>{},
@@ -316,8 +314,9 @@ class CachedVideoPlayerPlusController
     this.invalidateCacheIfOlderThan = const Duration(days: 30),
     this.skipCache = false,
     BaseCacheManager? cacheManager,
-    this.cacheKey,
-  })  : _closedCaptionFileFuture = closedCaptionFile,
+    String? cacheKey,
+  })  : _cacheKey = cacheKey,
+        _closedCaptionFileFuture = closedCaptionFile,
         dataSourceType = DataSourceType.network,
         package = null,
         _cacheManager = cacheManager ?? VideoCacheManager(),
@@ -341,8 +340,9 @@ class CachedVideoPlayerPlusController
     this.invalidateCacheIfOlderThan = const Duration(days: 30),
     this.skipCache = false,
     BaseCacheManager? cacheManager,
-    this.cacheKey,
-  })  : _closedCaptionFileFuture = closedCaptionFile,
+    String? cacheKey,
+  })  : _cacheKey = cacheKey,
+        _closedCaptionFileFuture = closedCaptionFile,
         dataSource = url.toString(),
         dataSourceType = DataSourceType.network,
         package = null,
@@ -359,8 +359,9 @@ class CachedVideoPlayerPlusController
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
     BaseCacheManager? cacheManager,
-    this.cacheKey,
-  })  : _closedCaptionFileFuture = closedCaptionFile,
+    String? cacheKey,
+  })  : _cacheKey = cacheKey,
+        _closedCaptionFileFuture = closedCaptionFile,
         dataSource = Uri.file(file.absolute.path).toString(),
         dataSourceType = DataSourceType.file,
         package = null,
@@ -379,11 +380,12 @@ class CachedVideoPlayerPlusController
     Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
     BaseCacheManager? cacheManager,
-    this.cacheKey,
+    String? cacheKey,
   })  : assert(
           defaultTargetPlatform == TargetPlatform.android,
           'CachedVideoPlayerPlusController.contentUri is only supported on Android.',
         ),
+        _cacheKey = cacheKey,
         _closedCaptionFileFuture = closedCaptionFile,
         dataSource = contentUri.toString(),
         dataSourceType = DataSourceType.contentUri,
@@ -398,6 +400,11 @@ class CachedVideoPlayerPlusController
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
   final String dataSource;
+
+  /// Optional cache key to use for caching
+  final String? _cacheKey;
+
+  String get cacheKey => _cacheKey ?? _generateKey(dataSource);
 
   /// HTTP headers used for the request to the [dataSource].
   /// Only for [CachedVideoPlayerPlusController.networkUrl].
@@ -424,9 +431,6 @@ class CachedVideoPlayerPlusController
 
   /// If set to true, it will skip the cache and use the video from the network.
   final bool skipCache;
-
-  /// Optional cache key to use for caching
-  final String? cacheKey;
 
   final BaseCacheManager _cacheManager;
 
@@ -463,10 +467,8 @@ class CachedVideoPlayerPlusController
 
   /// This will remove cached file from cache of the given [dataSource].
   Future<void> removeCurrentFileFromCache() async {
-    await _storage.initStorage;
     await Future.wait([
       _cacheManager.removeFile(dataSource),
-      _storage.remove(cacheKey ?? _getCacheKey(dataSource)),
     ]);
   }
 
@@ -476,77 +478,37 @@ class CachedVideoPlayerPlusController
     BaseCacheManager? cacheManager,
     String? cacheKey,
   }) async {
-    await _storage.initStorage;
-
     url = Uri.parse(url).toString();
 
-    final _cacheManager = cacheManager ?? VideoCacheManager();
+    final cacheManager0 = cacheManager ?? VideoCacheManager();
     await Future.wait([
-      _cacheManager.removeFile(url),
-      _storage.remove(cacheKey ?? _getCacheKey(url)),
+      cacheManager0.removeFile(url),
     ]);
   }
 
   /// Clears all cached videos.
   static Future<void> clearAllCache({BaseCacheManager? cacheManager}) async {
-    await _storage.initStorage;
-
-    final _cacheManager = cacheManager ?? VideoCacheManager();
+    final cacheManager0 = cacheManager ?? VideoCacheManager();
     await Future.wait([
-      _cacheManager.emptyCache(),
-      _storage.erase(),
+      cacheManager0.emptyCache(),
     ]);
   }
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    await _storage.initStorage;
-
     late String realDataSource;
     bool isCacheAvailable = false;
 
     if (dataSourceType == DataSourceType.network && _shouldUseCache) {
-      FileInfo? cachedFile = await _cacheManager.getFileFromCache(dataSource);
-
+      FileInfo? cachedFile = await _cacheManager.getFileFromCache(cacheKey);
       debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
-
-      if (cachedFile != null) {
-        final cachedElapsedMillis =
-            _storage.read(cacheKey ?? _getCacheKey(dataSource));
-
-        if (cachedElapsedMillis != null) {
-          final now = DateTime.timestamp();
-          final cachedDate = DateTime.fromMillisecondsSinceEpoch(
-            cachedElapsedMillis,
-          );
-          final difference = now.difference(cachedDate);
-
-          debugPrint(
-            'Cache for [$dataSource] valid till: '
-            '${cachedDate.add(invalidateCacheIfOlderThan)}',
-          );
-
-          if (difference > invalidateCacheIfOlderThan) {
-            debugPrint('Cache of [$dataSource] expired. Removing...');
-            await _cacheManager.removeFile(dataSource);
-            cachedFile = null;
-          }
-        } else {
-          debugPrint('Cache of [$dataSource] expired. Removing...');
-          await _cacheManager.removeFile(dataSource);
-          cachedFile = null;
-        }
-      }
 
       if (cachedFile == null) {
         _cacheManager
-            .downloadFile(dataSource, authHeaders: httpHeaders)
+            .downloadFile(dataSource, authHeaders: httpHeaders, key: cacheKey)
             .then((_) {
-          _storage.write(
-            cacheKey ?? _getCacheKey(dataSource),
-            DateTime.timestamp().millisecondsSinceEpoch,
-          );
-          debugPrint('Cached video [$dataSource] successfully.');
+          debugPrint(
+              'Cached video [$dataSource] successfully with key: $cacheKey.');
         });
       } else {
         isCacheAvailable = true;
