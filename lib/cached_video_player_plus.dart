@@ -464,9 +464,11 @@ class CachedVideoPlayerPlusController
     ]);
   }
 
-  /* 
   /// This will remove cached file from cache of the given [url].
-  static Future<void> removeFileFromCache(String url, {BaseCacheManager? cacheManager}) async {
+  static Future<void> removeFileFromCache(
+    String url, {
+    BaseCacheManager? cacheManager,
+  }) async {
     await _storage.initStorage;
 
     url = Uri.parse(url).toString();
@@ -476,17 +478,18 @@ class CachedVideoPlayerPlusController
       _cacheManager.removeFile(url),
       _storage.remove('cached_video_player_plus_video_expiration_of_$url'),
     ]);
-  } */
+  }
 
   /// Clears all cached videos.
-  /* static Future<void> clearAllCache() async {
+  static Future<void> clearAllCache({BaseCacheManager? cacheManager}) async {
     await _storage.initStorage;
 
+    final _cacheManager = cacheManager ?? VideoCacheManager();
     await Future.wait([
       _cacheManager.emptyCache(),
       _storage.erase(),
     ]);
-  } */
+  }
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
