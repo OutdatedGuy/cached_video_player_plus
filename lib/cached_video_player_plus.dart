@@ -261,9 +261,7 @@ class CachedVideoPlayerPlusValue {
 final _storage = GetStorage('cached_video_player_plus');
 
 String _getCacheKey(String dataSource) {
-  return 'cached_video_player_plus_video_expiration_of_${Uri.parse(
-    dataSource,
-  )}';
+  return 'cached_video_player_plus_video_expiration_of_${Uri.parse(dataSource)}';
 }
 
 /// Controls a platform video player, and provides updates when the state is
@@ -289,6 +287,7 @@ class CachedVideoPlayerPlusController
     Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
     BaseCacheManager? cacheManager,
+    this.cacheKey,
   })  : _closedCaptionFileFuture = closedCaptionFile,
         dataSourceType = DataSourceType.asset,
         formatHint = null,
@@ -317,6 +316,7 @@ class CachedVideoPlayerPlusController
     this.invalidateCacheIfOlderThan = const Duration(days: 30),
     this.skipCache = false,
     BaseCacheManager? cacheManager,
+    this.cacheKey,
   })  : _closedCaptionFileFuture = closedCaptionFile,
         dataSourceType = DataSourceType.network,
         package = null,
@@ -341,6 +341,7 @@ class CachedVideoPlayerPlusController
     this.invalidateCacheIfOlderThan = const Duration(days: 30),
     this.skipCache = false,
     BaseCacheManager? cacheManager,
+    this.cacheKey,
   })  : _closedCaptionFileFuture = closedCaptionFile,
         dataSource = url.toString(),
         dataSourceType = DataSourceType.network,
@@ -358,6 +359,7 @@ class CachedVideoPlayerPlusController
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
     BaseCacheManager? cacheManager,
+    this.cacheKey,
   })  : _closedCaptionFileFuture = closedCaptionFile,
         dataSource = Uri.file(file.absolute.path).toString(),
         dataSourceType = DataSourceType.file,
@@ -377,6 +379,7 @@ class CachedVideoPlayerPlusController
     Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
     BaseCacheManager? cacheManager,
+    this.cacheKey,
   })  : assert(
           defaultTargetPlatform == TargetPlatform.android,
           'CachedVideoPlayerPlusController.contentUri is only supported on Android.',
@@ -422,6 +425,9 @@ class CachedVideoPlayerPlusController
   /// If set to true, it will skip the cache and use the video from the network.
   final bool skipCache;
 
+  /// Optional cache key to use for caching
+  final String? cacheKey;
+
   final BaseCacheManager _cacheManager;
 
   Future<ClosedCaptionFile>? _closedCaptionFileFuture;
@@ -460,7 +466,7 @@ class CachedVideoPlayerPlusController
     await _storage.initStorage;
     await Future.wait([
       _cacheManager.removeFile(dataSource),
-      _storage.remove(_getCacheKey(dataSource)),
+      _storage.remove(cacheKey ?? _getCacheKey(dataSource)),
     ]);
   }
 
@@ -468,6 +474,7 @@ class CachedVideoPlayerPlusController
   static Future<void> removeFileFromCache(
     String url, {
     BaseCacheManager? cacheManager,
+    String? cacheKey,
   }) async {
     await _storage.initStorage;
 
@@ -476,7 +483,7 @@ class CachedVideoPlayerPlusController
     final _cacheManager = cacheManager ?? VideoCacheManager();
     await Future.wait([
       _cacheManager.removeFile(url),
-      _storage.remove('cached_video_player_plus_video_expiration_of_$url'),
+      _storage.remove(cacheKey ?? _getCacheKey(url)),
     ]);
   }
 
@@ -504,7 +511,8 @@ class CachedVideoPlayerPlusController
       debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
 
       if (cachedFile != null) {
-        final cachedElapsedMillis = _storage.read(_getCacheKey(dataSource));
+        final cachedElapsedMillis =
+            _storage.read(cacheKey ?? _getCacheKey(dataSource));
 
         if (cachedElapsedMillis != null) {
           final now = DateTime.timestamp();
@@ -535,7 +543,7 @@ class CachedVideoPlayerPlusController
             .downloadFile(dataSource, authHeaders: httpHeaders)
             .then((_) {
           _storage.write(
-            _getCacheKey(dataSource),
+            cacheKey ?? _getCacheKey(dataSource),
             DateTime.timestamp().millisecondsSinceEpoch,
           );
           debugPrint('Cached video [$dataSource] successfully.');
