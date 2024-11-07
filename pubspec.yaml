@@ -14,9 +14,9 @@ dependencies:
   flutter_cache_manager: ^3.0.0
   get_storage: ^2.0.0
   html: ^0.15.0
-  video_player_android: ^2.0.0
-  video_player_avfoundation: ^2.0.0
-  video_player_platform_interface: ^6.1.0
+  video_player_android: ^2.7.16
+  video_player_avfoundation: ^2.6.2
+  video_player_platform_interface: ^6.2.3
   video_player_web: ^2.0.0
 
 dev_dependencies:
