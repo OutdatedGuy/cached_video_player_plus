@@ -454,6 +454,26 @@ class CachedVideoPlayerPlusController
     ]);
   }
 
+  static Future<bool> cache(String dataSource) async {
+    await _storage.initStorage;
+
+    dataSource = Uri.parse(dataSource).toString();
+    FileInfo? cachedFile = await _cacheManager.getFileFromCache(dataSource);
+
+    debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
+
+    if (cachedFile == null) {
+      await _cacheManager.downloadFile(dataSource);
+      await _storage.write(
+        _getCacheKey(dataSource),
+        DateTime.timestamp().millisecondsSinceEpoch,
+      );
+      debugPrint('Cached video [$dataSource] successfully.');
+    }
+
+    return true;
+  }
+
   /// This will remove cached file from cache of the given [url].
   static Future<void> removeFileFromCache(String url) async {
     await _storage.initStorage;
