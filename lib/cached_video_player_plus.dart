@@ -476,6 +476,47 @@ class CachedVideoPlayerPlusController
     ]);
   }
 
+  static Future<void> preCacheVideo(
+    String url, {
+    VideoFormat? formatHint,
+    Map<String, String> httpHeaders = const <String, String>{},
+    Duration invalidateCacheIfOlderThan = const Duration(days: 30),
+  }) async {
+    final _cacheManager = VideoCacheManager();
+    final _storage = GetStorage('cached_video_player_plus');
+
+    await _storage.initStorage;
+
+    final String cacheKey =
+        'cached_video_player_plus_video_expiration_of_${Uri.parse(url)}';
+
+    // Check if cache is valid
+    FileInfo? cachedFile = await _cacheManager.getFileFromCache(url);
+    if (cachedFile != null) {
+      final cachedElapsedMillis = _storage.read(cacheKey);
+      if (cachedElapsedMillis != null) {
+        final now = DateTime.timestamp();
+        final cachedDate =
+            DateTime.fromMillisecondsSinceEpoch(cachedElapsedMillis);
+        final difference = now.difference(cachedDate);
+
+        if (difference > invalidateCacheIfOlderThan) {
+          await _cacheManager.removeFile(url);
+          cachedFile = null;
+        }
+      } else {
+        await _cacheManager.removeFile(url);
+        cachedFile = null;
+      }
+    }
+
+    // Download and cache if not available or expired
+    if (cachedFile == null) {
+      await _cacheManager.downloadFile(url, authHeaders: httpHeaders);
+      _storage.write(cacheKey, DateTime.timestamp().millisecondsSinceEpoch);
+    }
+  }
+
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
     await _storage.initStorage;
