@@ -458,14 +458,18 @@ class CachedVideoPlayerPlusController
     await _storage.initStorage;
 
     dataSource = Uri.parse(dataSource).toString();
-    FileInfo? cachedFile = await _cacheManager.getFileFromCache(dataSource);
+    final uri = Uri.parse(dataSource);
 
-    debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
+    final key = "${uri.scheme}://${uri.host}${uri.path}";
+
+    FileInfo? cachedFile = await _cacheManager.getFileFromCache(key);
+
+    debugPrint('Cached video of [$key]! is: ${cachedFile?.file.path}');
 
     if (cachedFile == null) {
-      await _cacheManager.downloadFile(dataSource);
+      await _cacheManager.downloadFile(dataSource, key: key);
       await _storage.write(
-        _getCacheKey(dataSource),
+        _getCacheKey(key),
         DateTime.timestamp().millisecondsSinceEpoch,
       );
       debugPrint('Cached video [$dataSource] successfully.');
@@ -503,13 +507,15 @@ class CachedVideoPlayerPlusController
     late String realDataSource;
     bool isCacheAvailable = false;
 
-    if (dataSourceType == DataSourceType.network && _shouldUseCache) {
-      FileInfo? cachedFile = await _cacheManager.getFileFromCache(dataSource);
+    final uri = Uri.parse(dataSource);
+    final key = "${uri.scheme}://${uri.host}${uri.path}";
 
-      debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
+    if (dataSourceType == DataSourceType.network && _shouldUseCache) {
+      FileInfo? cachedFile = await _cacheManager.getFileFromCache(key);
+      debugPrint('Cached video of [$key] is: ${cachedFile?.file.path}');
 
       if (cachedFile != null) {
-        final cachedElapsedMillis = _storage.read(_getCacheKey(dataSource));
+        final cachedElapsedMillis = _storage.read(_getCacheKey(key));
 
         if (cachedElapsedMillis != null) {
           final now = DateTime.timestamp();
@@ -519,18 +525,18 @@ class CachedVideoPlayerPlusController
           final difference = now.difference(cachedDate);
 
           debugPrint(
-            'Cache for [$dataSource] valid till: '
+            'Cache for [$key] valid till: '
             '${cachedDate.add(invalidateCacheIfOlderThan)}',
           );
 
           if (difference > invalidateCacheIfOlderThan) {
-            debugPrint('Cache of [$dataSource] expired. Removing...');
-            await _cacheManager.removeFile(dataSource);
+            debugPrint('Cache of [$key] expired. Removing...');
+            await _cacheManager.removeFile(key);
             cachedFile = null;
           }
         } else {
-          debugPrint('Cache of [$dataSource] expired. Removing...');
-          await _cacheManager.removeFile(dataSource);
+          debugPrint('Cache of [$key] expired. Removing...');
+          await _cacheManager.removeFile(key);
           cachedFile = null;
         }
       }
@@ -540,10 +546,10 @@ class CachedVideoPlayerPlusController
             .downloadFile(dataSource, authHeaders: httpHeaders)
             .then((_) {
           _storage.write(
-            _getCacheKey(dataSource),
+            _getCacheKey(key),
             DateTime.timestamp().millisecondsSinceEpoch,
           );
-          debugPrint('Cached video [$dataSource] successfully.');
+          debugPrint('Cached video [$key] successfully.');
         });
       } else {
         isCacheAvailable = true;
