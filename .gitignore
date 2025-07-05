@@ -28,5 +28,5 @@ migrate_working_dir/
 .dart_tool/
 build/
 
-# Personal Files
-temp/
+# Development Scripts
+scripts/
