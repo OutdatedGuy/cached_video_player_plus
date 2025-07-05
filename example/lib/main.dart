@@ -15,10 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Cached Video Player Plus Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
       home: const MyHomePage(title: 'Cached Video Player Plus Example'),
     );
   }
@@ -39,19 +36,19 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    controller = CachedVideoPlayerPlusController.networkUrl(
-      Uri.parse(
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      ),
-      httpHeaders: {
-        'Connection': 'keep-alive',
-      },
-      invalidateCacheIfOlderThan: const Duration(minutes: 10),
-    )..initialize().then((value) async {
-        await controller.setLooping(true);
-        controller.play();
-        setState(() {});
-      });
+    controller =
+        CachedVideoPlayerPlusController.networkUrl(
+            Uri.parse(
+              'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            ),
+            httpHeaders: {'Connection': 'keep-alive'},
+            invalidateCacheIfOlderThan: const Duration(minutes: 10),
+          )
+          ..initialize().then((value) async {
+            await controller.setLooping(true);
+            controller.play();
+            setState(() {});
+          });
   }
 
   @override
@@ -63,9 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: Center(
         child: controller.value.isInitialized
             ? AspectRatio(

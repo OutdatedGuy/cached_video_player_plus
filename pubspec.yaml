@@ -5,22 +5,22 @@ homepage: https://outdatedguy.rocks
 repository: https://github.com/OutdatedGuy/cached_video_player_plus
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ^3.8.1
   flutter: '>=3.3.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_cache_manager: ^3.0.0
-  get_storage: ^2.0.0
-  html: ^0.15.0
-  video_player_android: ^2.0.0
-  video_player_avfoundation: ^2.0.0
-  video_player_platform_interface: ^6.1.0
-  video_player_web: ^2.0.0
+  flutter_cache_manager: ^3.4.1
+  get_storage: ^2.1.1
+  html: ^0.15.6
+  video_player_android: ^2.8.7
+  video_player_avfoundation: ^2.7.2
+  video_player_platform_interface: ^6.4.0
+  video_player_web: ^2.3.5
 
 dev_dependencies:
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -54,10 +54,10 @@ flutter:
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see
-  # https://flutter.dev/assets-and-images/#from-packages
+  # https://flutter.dev/to/asset-from-package
   #
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
+  # https://flutter.dev/to/resolution-aware-images
 
   # To add custom fonts to your plugin package, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -77,4 +77,4 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts in packages, see
-  # https://flutter.dev/custom-fonts/#from-packages
+  # https://flutter.dev/to/font-from-package
