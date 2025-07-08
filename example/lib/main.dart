@@ -3,11 +3,18 @@ import 'package:flutter/material.dart';
 
 // This Package
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
+import 'package:cached_video_player_plus/util/migration_utils.dart';
 
 // Third Party Packages
 import 'package:video_player/video_player.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Migrate cached video data from get_storage to shared_preferences
+  // This should be called ONCE before removing get_storage dependency
+  await migrateCachedVideoDataToSharedPreferences();
+
   runApp(const MyApp());
 }
 

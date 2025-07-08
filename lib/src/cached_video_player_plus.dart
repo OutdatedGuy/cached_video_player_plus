@@ -2,16 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:video_player/video_player.dart';
 
 import 'video_cache_manager.dart';
+import 'video_player_storage.dart';
 
 /// The default cache manager for video file caching operations.
 final _defaultCacheManager = VideoCacheManager();
 
 /// Global storage for cache metadata and expiration timestamps.
-final _storage = GetStorage('cached_video_player_plus');
+final _storage = VideoPlayerStorage();
 
 /// Generates a storage key for the given [dataSource].
 String _getCacheKey(String dataSource) {
@@ -289,8 +289,6 @@ class CachedVideoPlayerPlus {
       return;
     }
 
-    await _storage.initStorage;
-
     late String realDataSource;
     bool isCacheAvailable = false;
 
@@ -304,7 +302,7 @@ class CachedVideoPlayerPlus {
       }
 
       if (cachedFile != null) {
-        final cachedElapsedMillis = _storage.read(_cacheKey);
+        final cachedElapsedMillis = await _storage.read(_cacheKey);
 
         if (cachedElapsedMillis != null) {
           final now = DateTime.timestamp();
@@ -413,8 +411,6 @@ class CachedVideoPlayerPlus {
   ///
   /// The cached video file and its metadata will be permanently deleted.
   Future<void> removeFromCache() async {
-    await _storage.initStorage;
-
     await Future.wait([
       _cacheManager.removeFile(_cacheKey),
       _storage.remove(_cacheKey),
@@ -436,8 +432,6 @@ class CachedVideoPlayerPlus {
     Uri url, {
     CacheManager? cacheManager,
   }) async {
-    await _storage.initStorage;
-
     final urlString = url.toString();
     final cacheKey = _getCacheKey(urlString);
 
@@ -464,8 +458,6 @@ class CachedVideoPlayerPlus {
     String cacheKey, {
     CacheManager? cacheManager,
   }) async {
-    await _storage.initStorage;
-
     cacheKey = _getCustomCacheKey(cacheKey);
 
     cacheManager ??= _defaultCacheManager;
@@ -488,8 +480,6 @@ class CachedVideoPlayerPlus {
   /// This operation cannot be undone. All cached videos will need to be
   /// re-downloaded from their original sources.
   static Future<void> clearAllCache({CacheManager? cacheManager}) async {
-    await _storage.initStorage;
-
     cacheManager ??= _defaultCacheManager;
 
     await Future.wait([cacheManager.emptyCache(), _storage.erase()]);
