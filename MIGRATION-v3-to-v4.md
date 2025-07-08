@@ -6,6 +6,44 @@ This guide will help you migrate from `cached_video_player_plus` v3.x.x to v4.0.
 
 Version 4.0.0 introduces a major API restructure that simplifies usage while maintaining all existing functionality. The package now uses a class-based approach instead of the previous controller-widget pattern.
 
+## 💿 Storage Migration: get_storage → shared_preferences
+
+Version 4.0.0 migrates from `get_storage` to `shared_preferences` for storing cached video metadata. This change improves compatibility and reduces dependencies.
+
+### 🔄 Automatic Migration
+
+The package includes an automatic migration utility that preserves your existing cached video data:
+
+```dart
+import 'package:cached_video_player_plus/util/migration_utils.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Migrate cached video data from get_storage to shared_preferences
+  // This must be called before runApp() to ensure data is available
+  await migrateCachedVideoDataToSharedPreferences();
+
+  runApp(MyApp());
+}
+```
+
+### ⚠️ Important Migration Notes
+
+1. **Call migration before runApp()**: The migration function must be called and awaited before `runApp()` to ensure cached data is available.
+
+2. **One-time migration**: The migration automatically tracks completion and won't run multiple times.
+
+3. **Debug output**: In debug mode, you'll see console output indicating how many cache entries were migrated.
+
+4. **Automatic cleanup**: After successful migration, the old get_storage data is automatically cleared.
+
+### 🗂️ What Gets Migrated
+
+- **Cache timestamps**: Integer timestamps for cache invalidation
+- **Cache metadata**: All cached video metadata stored in get_storage
+- **Migration completion flag**: Ensures migration only runs once
+
 ## 🚨 Breaking Changes
 
 ### 1. API Architecture Change
