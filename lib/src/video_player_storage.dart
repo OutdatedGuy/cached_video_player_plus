@@ -9,7 +9,7 @@ class VideoPlayerStorage {
   final _asyncPrefs = SharedPreferencesAsync();
 
   /// Key prefix for all video player storage keys.
-  static const _keyPrefix = 'cached_video_player_plus_';
+  static const _keyPrefix = 'cached_video_player_plus_video_expiration_of_';
 
   /// Singleton instance of VideoPlayerStorage.
   static final _instance = VideoPlayerStorage._internal();
