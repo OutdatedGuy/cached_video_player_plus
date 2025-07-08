@@ -1,6 +1,6 @@
 # cached_video_player_plus_example
 
-Demonstrates how to use the cached_video_player_plus plugin.
+Demonstrates how to use the cached_video_player_plus package.
 
 ## Getting Started
 
