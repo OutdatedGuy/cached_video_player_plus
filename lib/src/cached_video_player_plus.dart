@@ -7,8 +7,8 @@ import 'package:video_player/video_player.dart';
 
 import 'video_cache_manager.dart';
 
-/// Global cache manager for video file caching operations.
-final _cacheManager = VideoCacheManager();
+/// The default cache manager for video file caching operations.
+final _defaultCacheManager = VideoCacheManager();
 
 /// Global storage for cache metadata and expiration timestamps.
 final _storage = GetStorage('cached_video_player_plus');
@@ -66,7 +66,8 @@ class CachedVideoPlayerPlus {
        httpHeaders = const <String, String>{},
        invalidateCacheIfOlderThan = Duration.zero,
        skipCache = true,
-       _cacheKey = '';
+       _cacheKey = '',
+       _cacheManager = _defaultCacheManager;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a network URL.
   ///
@@ -87,6 +88,10 @@ class CachedVideoPlayerPlus {
   /// The [cacheKey] parameter allows specifying a custom cache key for
   /// caching operations. If not provided, a default key based on the URL will
   /// be used.
+  ///
+  /// The [cacheManager] parameter allows providing a custom [CacheManager]
+  /// instance for caching operations. If not provided, the default
+  /// [VideoCacheManager] will be used.
   CachedVideoPlayerPlus.networkUrl(
     Uri url, {
     this.formatHint,
@@ -97,12 +102,14 @@ class CachedVideoPlayerPlus {
     this.invalidateCacheIfOlderThan = const Duration(days: 69),
     this.skipCache = false,
     String? cacheKey,
+    CacheManager? cacheManager,
   }) : dataSource = url.toString(),
        dataSourceType = DataSourceType.network,
        package = null,
        _cacheKey = cacheKey != null
            ? _getCustomCacheKey(cacheKey)
-           : _getCacheKey(url.toString());
+           : _getCacheKey(url.toString()),
+       _cacheManager = cacheManager ?? _defaultCacheManager;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a file.
   ///
@@ -123,7 +130,8 @@ class CachedVideoPlayerPlus {
        formatHint = null,
        invalidateCacheIfOlderThan = Duration.zero,
        skipCache = true,
-       _cacheKey = '';
+       _cacheKey = '',
+       _cacheManager = _defaultCacheManager;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a contentUri.
   ///
@@ -147,7 +155,8 @@ class CachedVideoPlayerPlus {
        httpHeaders = const <String, String>{},
        invalidateCacheIfOlderThan = Duration.zero,
        skipCache = true,
-       _cacheKey = '';
+       _cacheKey = '',
+       _cacheManager = _defaultCacheManager;
 
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
@@ -162,7 +171,7 @@ class CachedVideoPlayerPlus {
   /// detection with whatever is set here.
   final VideoFormat? formatHint;
 
-  /// Describes the type of data source this [VideoPlayerController]
+  /// Describes the type of data source this [CachedVideoPlayerPlus]
   /// is constructed with.
   final DataSourceType dataSourceType;
 
@@ -194,6 +203,14 @@ class CachedVideoPlayerPlus {
   /// The cache key used for caching operations. This is used to uniquely
   /// identify the cached video file.
   final String _cacheKey;
+
+  /// The [CacheManager] instance used for caching video files.
+  ///
+  /// This is used to manage cached video files, including downloading,
+  /// retrieving, and removing cached files.
+  ///
+  /// Defaults to [VideoCacheManager] if not provided.
+  final CacheManager _cacheManager;
 
   /// The underlying video player controller that handles actual video playback.
   late VideoPlayerController _videoPlayerController;
@@ -385,39 +402,55 @@ class CachedVideoPlayerPlus {
 
   /// Removes the cached file for the specified [url] from the cache.
   ///
-  /// Use this to remove specific cached videos by their URL.
+  /// Use this static method to remove specific cached videos by their URL.
   ///
   /// The [url] parameter should be the original network URL of the video.
   /// This method has no effect if the URL is not found in the cache.
   ///
+  /// The [cacheManager] parameter allows specifying a custom [CacheManager]
+  /// instance. If not provided, the default [VideoCacheManager] will be used.
+  ///
   /// Both the cached video file and its expiration metadata are deleted.
-  static Future<void> removeFileFromCache(Uri url) async {
+  static Future<void> removeFileFromCache(
+    Uri url, {
+    CacheManager? cacheManager,
+  }) async {
     await _storage.initStorage;
 
     final urlString = url.toString();
     final cacheKey = _getCacheKey(urlString);
 
+    cacheManager ??= _defaultCacheManager;
+
     await Future.wait([
-      _cacheManager.removeFile(cacheKey),
+      cacheManager.removeFile(cacheKey),
       _storage.remove(cacheKey),
     ]);
   }
 
   /// Removes the cached file for the specified [cacheKey].
   ///
-  /// Use this to remove cached videos using a custom cache key instead of the
-  /// original URL.
+  /// Use this static method to remove cached videos using a custom cache key
+  /// instead of the original URL.
   ///
   /// The [cacheKey] parameter should match the key used when caching the video.
   ///
+  /// The [cacheManager] parameter allows specifying a custom [CacheManager]
+  /// instance. If not provided, the default [VideoCacheManager] will be used.
+  ///
   /// Both the cached video file and its expiration metadata are deleted.
-  static Future<void> removeFileFromCacheByKey(String cacheKey) async {
+  static Future<void> removeFileFromCacheByKey(
+    String cacheKey, {
+    CacheManager? cacheManager,
+  }) async {
     await _storage.initStorage;
 
     cacheKey = _getCustomCacheKey(cacheKey);
 
+    cacheManager ??= _defaultCacheManager;
+
     await Future.wait([
-      _cacheManager.removeFile(cacheKey),
+      cacheManager.removeFile(cacheKey),
       _storage.remove(cacheKey),
     ]);
   }
@@ -428,11 +461,16 @@ class CachedVideoPlayerPlus {
   /// associated expiration data from storage. Use this to free up storage
   /// space or reset the cache state.
   ///
-  /// This operation cannot be undone. All videos will need to be
+  /// The [cacheManager] parameter allows specifying a custom [CacheManager]
+  /// instance. If not provided, the default [VideoCacheManager] will be used.
+  ///
+  /// This operation cannot be undone. All cached videos will need to be
   /// re-downloaded from their original sources.
-  static Future<void> clearAllCache() async {
+  static Future<void> clearAllCache({CacheManager? cacheManager}) async {
     await _storage.initStorage;
 
-    await Future.wait([_cacheManager.emptyCache(), _storage.erase()]);
+    cacheManager ??= _defaultCacheManager;
+
+    await Future.wait([cacheManager.emptyCache(), _storage.erase()]);
   }
 }
