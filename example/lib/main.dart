@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 // This Package
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 
+// Third Party Packages
+import 'package:video_player/video_player.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -31,29 +34,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late CachedVideoPlayerPlusController controller;
+  late CachedVideoPlayerPlus player;
 
   @override
   void initState() {
     super.initState();
-    controller =
-        CachedVideoPlayerPlusController.networkUrl(
-            Uri.parse(
-              'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-            ),
-            httpHeaders: {'Connection': 'keep-alive'},
-            invalidateCacheIfOlderThan: const Duration(minutes: 10),
-          )
-          ..initialize().then((value) async {
-            await controller.setLooping(true);
-            controller.play();
-            setState(() {});
-          });
+    player = CachedVideoPlayerPlus.networkUrl(
+      Uri.parse(
+        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      ),
+      invalidateCacheIfOlderThan: const Duration(minutes: 10),
+    );
+
+    player.initialize().then((_) {
+      player.controller.setVolume(0);
+      player.controller.setLooping(true);
+      player.controller.play();
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    player.dispose();
     super.dispose();
   }
 
@@ -62,10 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
       body: Center(
-        child: controller.value.isInitialized
+        child: player.isInitialized
             ? AspectRatio(
-                aspectRatio: controller.value.aspectRatio,
-                child: CachedVideoPlayerPlus(controller),
+                aspectRatio: player.controller.value.aspectRatio,
+                child: VideoPlayer(player.controller),
               )
             : const CircularProgressIndicator.adaptive(),
       ),
