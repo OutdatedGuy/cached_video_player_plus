@@ -11,6 +11,12 @@ The [video_player] plugin with the SUPER-POWER of caching using
 
 <hr />
 
+## 🚨 Important: v4.0.0 Breaking Changes
+
+**Version 4.0.0 introduces a total API restructuring, adding new features while maintaining all functionality. These changes introduce major breaking changes.**
+
+If you're upgrading from v3.x.x, please review the **📖 [Complete Migration Guide](MIGRATION-v3-to-v4.md)** for detailed upgrade instructions and **💻 [Updated Examples](example/)** to see the new API in action.
+
 ## Getting Started
 
 ### 1. Add dependency
