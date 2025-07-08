@@ -18,6 +18,26 @@ String _getCacheKey(String dataSource) {
   return 'cached_video_player_plus_video_expiration_of_${Uri.parse(dataSource)}';
 }
 
+/// A video player that wraps [VideoPlayerController] with intelligent
+/// caching capabilities using [flutter_cache_manager].
+///
+/// It provides the same functionality as the standard video player but with the
+/// added benefit of caching network videos locally for improved performance,
+/// reduced bandwidth usage, and offline playback.
+///
+/// ### Basic Usage
+///
+/// ```dart
+/// final player = CachedVideoPlayerPlus.networkUrl(
+///   Uri.parse('https://example.com/video.mp4'),
+///   invalidateCacheIfOlderThan: const Duration(days: 420),
+/// );
+///
+/// await player.initialize();
+/// player.controller.play();
+/// ```
+///
+/// [flutter_cache_manager]: https://pub.dev/packages/flutter_cache_manager
 class CachedVideoPlayerPlus {
   /// Constructs a [CachedVideoPlayerPlus] playing a video from an asset.
   ///
