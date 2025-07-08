@@ -1,7 +1,9 @@
 # Cached Video Player Plus
 
-The [video_player] plugin with the SUPER-POWER of caching using
-[flutter_cache_manager].
+The [video_player] plugin that went to therapy, worked on its commitment issues, and now actually remembers your videos! 🧠  
+Powered by the magic of [flutter_cache_manager] - because buffering wheels are so 2010.
+
+_Like video_player, but with a photographic memory and trust issues with the internet._ 📹✨
 
 [![pub package][package_svg]][package]
 [![GitHub][license_svg]](LICENSE)
@@ -10,6 +12,12 @@ The [video_player] plugin with the SUPER-POWER of caching using
 [![GitHub issues closed][issues_closed_svg]][issues_closed]
 
 <hr />
+
+## 🚨 Important: v4.0.0 Breaking Changes
+
+**Version 4.0.0 introduces a total API restructuring, adding new features while maintaining all functionality. These changes introduce major breaking changes.**
+
+If you're upgrading from v3.x.x, please review the **📖 [Complete Migration Guide](MIGRATION-v3-to-v4.md)** for detailed upgrade instructions and **💻 [Updated Examples](example/)** to see the new API in action.
 
 ## Getting Started
 
