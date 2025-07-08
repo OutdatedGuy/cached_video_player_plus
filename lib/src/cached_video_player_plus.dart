@@ -64,6 +64,7 @@ class CachedVideoPlayerPlus {
   }) : dataSourceType = DataSourceType.asset,
        formatHint = null,
        httpHeaders = const <String, String>{},
+       _authHeaders = const <String, String>{},
        invalidateCacheIfOlderThan = Duration.zero,
        skipCache = true,
        _cacheKey = '',
@@ -78,6 +79,12 @@ class CachedVideoPlayerPlus {
   ///
   /// [httpHeaders] option allows to specify HTTP headers for the request to the
   /// [url].
+  ///
+  /// [downloadHeaders] option allows to specify HTTP headers specifically for
+  /// downloading the video file for caching. If not provided, [httpHeaders]
+  /// will be used. This is useful when [httpHeaders] contains
+  /// streaming-specific headers like 'Range' that should not be used when
+  /// downloading the complete video file for caching.
   ///
   /// The [invalidateCacheIfOlderThan] parameter controls cache expiration.
   /// Videos cached before this duration will be re-downloaded. Defaults to 69
@@ -98,6 +105,7 @@ class CachedVideoPlayerPlus {
     this.closedCaptionFile,
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
+    Map<String, String>? downloadHeaders,
     this.viewType = VideoViewType.textureView,
     this.invalidateCacheIfOlderThan = const Duration(days: 69),
     this.skipCache = false,
@@ -106,6 +114,7 @@ class CachedVideoPlayerPlus {
   }) : dataSource = url.toString(),
        dataSourceType = DataSourceType.network,
        package = null,
+       _authHeaders = downloadHeaders ?? httpHeaders,
        _cacheKey = cacheKey != null
            ? _getCustomCacheKey(cacheKey)
            : _getCacheKey(url.toString()),
@@ -128,6 +137,7 @@ class CachedVideoPlayerPlus {
        dataSourceType = DataSourceType.file,
        package = null,
        formatHint = null,
+       _authHeaders = const <String, String>{},
        invalidateCacheIfOlderThan = Duration.zero,
        skipCache = true,
        _cacheKey = '',
@@ -153,6 +163,7 @@ class CachedVideoPlayerPlus {
        package = null,
        formatHint = null,
        httpHeaders = const <String, String>{},
+       _authHeaders = const <String, String>{},
        invalidateCacheIfOlderThan = Duration.zero,
        skipCache = true,
        _cacheKey = '',
@@ -166,6 +177,16 @@ class CachedVideoPlayerPlus {
   /// Only for [CachedVideoPlayerPlus.networkUrl].
   /// Always empty for other video types.
   final Map<String, String> httpHeaders;
+
+  /// HTTP headers used specifically for downloading the video file
+  /// for caching purposes.
+  ///
+  /// This is useful when [httpHeaders] contains streaming-specific headers
+  /// like 'Range' that should not be used when downloading the complete video
+  /// file for caching.
+  ///
+  /// If not provided, [httpHeaders] will be used.
+  final Map<String, String> _authHeaders;
 
   /// **Android only**. Will override the platform's generic file format
   /// detection with whatever is set here.
@@ -317,7 +338,7 @@ class CachedVideoPlayerPlus {
 
       if (cachedFile == null) {
         _cacheManager
-            .downloadFile(dataSource, authHeaders: httpHeaders, key: _cacheKey)
+            .downloadFile(dataSource, authHeaders: _authHeaders, key: _cacheKey)
             .then((_) {
               _storage.write(
                 _cacheKey,
