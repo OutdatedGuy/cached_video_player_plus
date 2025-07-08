@@ -371,14 +371,14 @@ class CachedVideoPlayerPlus {
   /// This method has no effect if the URL is not found in the cache.
   ///
   /// Both the cached video file and its expiration metadata are deleted.
-  static Future<void> removeFileFromCache(String url) async {
+  static Future<void> removeFileFromCache(Uri url) async {
     await _storage.initStorage;
 
-    url = Uri.parse(url).toString();
+    final urlString = url.toString();
 
     await Future.wait([
-      _cacheManager.removeFile(url),
-      _storage.remove('cached_video_player_plus_video_expiration_of_$url'),
+      _cacheManager.removeFile(urlString),
+      _storage.remove(_getCacheKey(urlString)),
     ]);
   }
 

@@ -93,7 +93,11 @@ CachedVideoPlayerPlus.contentUri(uri, ...)
 
 - ❌ `removeCurrentFileFromCache()` → ✅ `removeFromCache()`
 
-### 5. Import Changes
+### 5. Parameter Type Changes
+
+- ❌ `removeFileFromCache(String url)` → ✅ `removeFileFromCache(Uri url)`
+
+### 6. Import Changes
 
 **Before:**
 
@@ -217,6 +221,16 @@ await controller.removeCurrentFileFromCache();
 await player.removeFromCache();
 ```
 
+**Static Cache Removal:**
+
+```dart
+// Before
+await CachedVideoPlayerPlus.removeFileFromCache('https://example.com/video.mp4');
+
+// After
+await CachedVideoPlayerPlus.removeFileFromCache(Uri.parse('https://example.com/video.mp4'));
+```
+
 **Video Operations:**
 
 ```dart
@@ -299,6 +313,20 @@ player.controller.play()
 
 ```dart
 import 'package:video_player/video_player.dart';
+```
+
+### Issue 4: Parameter Type Errors
+
+**Error:** `The argument type 'String' can't be assigned to the parameter type 'Uri'`
+
+**Solution:** Wrap string URLs with `Uri.parse()`:
+
+```dart
+// Before
+await CachedVideoPlayerPlus.removeFileFromCache('https://example.com/video.mp4');
+
+// After
+await CachedVideoPlayerPlus.removeFileFromCache(Uri.parse('https://example.com/video.mp4'));
 ```
 
 ## 📚 Complete Example
