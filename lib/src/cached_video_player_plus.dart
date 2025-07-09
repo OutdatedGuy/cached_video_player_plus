@@ -241,11 +241,11 @@ class CachedVideoPlayerPlus {
   /// This provides access to the underlying [VideoPlayerController] for video
   /// playback operations like play, pause, seek, and accessing video state.
   ///
-  /// Throws an [Exception] if the controller is not initialized. Always call
+  /// Throws an [StateError] if the controller is not initialized. Always call
   /// [initialize] before accessing this property.
   VideoPlayerController get controller {
     if (!_isInitialized) {
-      throw Exception(
+      throw StateError(
         'CachedVideoPlayerPlus is not initialized. '
         'Call initialize() before accessing the controller.',
       );
