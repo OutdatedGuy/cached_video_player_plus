@@ -484,4 +484,89 @@ class CachedVideoPlayerPlus {
 
     await Future.wait([cacheManager.emptyCache(), _storage.erase()]);
   }
+
+  /// Pre-caches a video file from the specified [url].
+  ///
+  /// This method can be used to pre-cache videos before they are played,
+  /// ensuring smooth playback even in low network conditions without
+  /// requiring to [initialize] a [CachedVideoPlayerPlus] instance, saving
+  /// memory and resources.
+  ///
+  /// The [invalidateCacheIfOlderThan] parameter controls cache expiration.
+  /// Videos cached before this duration will be re-downloaded. Defaults to 69
+  /// days.
+  ///
+  /// The [downloadHeaders] parameter allows specifying HTTP headers for the
+  /// request to the [url]. This is useful for authenticated requests or
+  /// custom headers required by the video server.
+  ///
+  /// The [cacheKey] parameter allows specifying a custom cache key for
+  /// caching operations. If not provided, a default key based on the URL will
+  /// be used.
+  ///
+  /// The [cacheManager] parameter allows providing a custom [CacheManager]
+  /// instance for caching operations. If not provided, the default
+  /// [VideoCacheManager] will be used.
+  static Future<void> preCacheVideo(
+    Uri url, {
+    Duration invalidateCacheIfOlderThan = const Duration(days: 69),
+    Map<String, String> downloadHeaders = const <String, String>{},
+    String? cacheKey,
+    CacheManager? cacheManager,
+  }) async {
+    cacheManager ??= _defaultCacheManager;
+
+    final effectiveCacheKey = cacheKey != null
+        ? _getCustomCacheKey(cacheKey)
+        : _getCacheKey(url.toString());
+
+    // First check if the video is already cached
+    FileInfo? cachedFile = await cacheManager.getFileFromCache(
+      effectiveCacheKey,
+    );
+
+    if (cachedFile != null) {
+      final cachedElapsedMillis = await _storage.read(effectiveCacheKey);
+
+      if (cachedElapsedMillis != null) {
+        final now = DateTime.timestamp();
+        final cachedDate = DateTime.fromMillisecondsSinceEpoch(
+          cachedElapsedMillis,
+        );
+        final difference = now.difference(cachedDate);
+
+        if (difference > invalidateCacheIfOlderThan) {
+          if (kDebugMode) {
+            debugPrint('Cache of [$url] expired. Removing...');
+          }
+          cacheManager.removeFile(effectiveCacheKey);
+          cachedFile = null;
+        }
+      } else {
+        if (kDebugMode) {
+          debugPrint('Cache of [$url] expired. Removing...');
+        }
+        cacheManager.removeFile(effectiveCacheKey);
+        cachedFile = null;
+      }
+    }
+
+    if (cachedFile == null) {
+      // If not cached, download and cache the video
+      await cacheManager.downloadFile(
+        url.toString(),
+        key: effectiveCacheKey,
+        authHeaders: downloadHeaders,
+      );
+
+      await _storage.write(
+        effectiveCacheKey,
+        DateTime.timestamp().millisecondsSinceEpoch,
+      );
+
+      if (kDebugMode) {
+        debugPrint('Pre-Cached video [$url] successfully.');
+      }
+    }
+  }
 }
