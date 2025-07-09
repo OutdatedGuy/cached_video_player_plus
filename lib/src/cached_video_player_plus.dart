@@ -267,7 +267,7 @@ class CachedVideoPlayerPlus {
   /// Caching is only supported for network data sources. Asset, file, and
   /// contentUri data sources always return false.
   bool get _shouldUseCache {
-    return dataSourceType == DataSourceType.network && !skipCache;
+    return dataSourceType == DataSourceType.network && !kIsWeb && !skipCache;
   }
 
   /// Initializes the video player and sets up caching if applicable.
