@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'cache_key_helpers.dart' show cacheTimePrefix;
+
 /// Storage abstraction for cached video metadata.
 ///
 /// This class handles the storage of cache expiration timestamps and provides
@@ -7,9 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class VideoPlayerStorage {
   /// SharedPreferences instance for storing cache metadata.
   final _asyncPrefs = SharedPreferencesAsync();
-
-  /// Key prefix for all video player storage keys.
-  static const _keyPrefix = 'cached_video_player_plus_video_expiration_of_';
 
   /// Singleton instance of VideoPlayerStorage.
   static final _instance = VideoPlayerStorage._internal();
@@ -46,7 +45,9 @@ class VideoPlayerStorage {
   /// This removes all keys that start with the video player prefix.
   Future<void> erase() async {
     final keys = await _asyncPrefs.getKeys();
-    final videoPlayerKeys = keys.where((key) => key.startsWith(_keyPrefix));
+    final videoPlayerKeys = keys.where(
+      (key) => key.startsWith(cacheTimePrefix),
+    );
 
     for (final key in videoPlayerKeys) {
       await _asyncPrefs.remove(key);
