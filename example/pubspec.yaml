@@ -23,7 +23,17 @@ dependencies:
     path: ../
   flutter:
     sdk: flutter
+  flutter_cache_manager: ^3.4.1
   video_player: ^2.10.0
+  chewie: ^1.12.1
+  shared_preferences: ^2.5.3
+
+dependency_overrides:
+  flutter_cache_manager:
+    git:
+      url: https://github.com/Baseflow/flutter_cache_manager.git
+      path: flutter_cache_manager
+      ref: 54904e499a06d0364a2b3f4ca9789e5f829f1879
 
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to
