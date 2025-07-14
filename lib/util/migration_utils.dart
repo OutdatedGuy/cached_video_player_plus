@@ -34,6 +34,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// This migration is necessary to ensures that existing cached video data is
 /// preserved and accessible through shared_preferences.
+///
+/// ## Usage
+///
+/// ```dart
+/// void main() async {
+///   WidgetsFlutterBinding.ensureInitialized();
+///
+///   // Migrate cached video data from get_storage to shared_preferences
+///   // This should be called and awaited before calling runApp()
+///   await migrateCachedVideoDataToSharedPreferences();
+///
+///   runApp(MyApp());
+/// }
+/// ```
 Future<void> migrateCachedVideoDataToSharedPreferences() async {
   const migrationKey = 'cached_video_player_plus_migration_completed_v4';
 

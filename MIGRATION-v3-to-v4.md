@@ -678,7 +678,7 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       ),
       // Default is now 69 days, set to 30 if you want old v3.x.x behavior
-      invalidateCacheIfOlderThan: const Duration(days: 420),
+      invalidateCacheIfOlderThan: const Duration(days: 42),
       // New v4.0.0 feature: custom cache key
       cacheKey: 'big_buck_bunny_demo',
       // New v4.0.0 feature: separate download headers
@@ -807,7 +807,7 @@ Cache videos before playing them:
 // Pre-cache a video without creating a player instance
 await CachedVideoPlayerPlus.preCacheVideo(
   Uri.parse('https://example.com/video.mp4'),
-  invalidateCacheIfOlderThan: const Duration(days: 420),
+  invalidateCacheIfOlderThan: const Duration(days: 42),
 );
 ```
 
