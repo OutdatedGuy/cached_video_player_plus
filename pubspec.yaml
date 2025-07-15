@@ -3,6 +3,14 @@ description: "The video_player plugin that went to therapy, worked on its commit
 version: 3.0.3
 homepage: https://outdatedguy.rocks
 repository: https://github.com/OutdatedGuy/cached_video_player_plus
+topics:
+  - caching
+  - video-caching
+  - video
+  - video-player
+funding:
+  - https://coff.ee/outdatedguy
+  - https://github.com/sponsors/OutdatedGuy
 
 environment:
   sdk: ^3.8.1
