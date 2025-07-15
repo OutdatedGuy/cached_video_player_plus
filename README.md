@@ -13,45 +13,35 @@ _Like video_player, but with a photographic memory and trust issues with the int
 
 <hr />
 
-**💾 Cache videos seamlessly for offline playback**  
+**Cache videos seamlessly for offline playback**  
 **🚀 Zero buffering on repeat views** _(your users will love you for this!)_  
-**🎯 Drop-in replacement for video_player** _(well, mostly - see migration guide!)_  
-**📱 Cross-platform support** _(Android, iOS, macOS, Web)_
+**Drop-in replacement for video_player** _(well, mostly - see migration guide!)_  
+**📱 Cross-platform support** _(Android, iOS, macOS, Web\*, Linux\*, Windows\*)_
 
 ## ✨ What's New in v4.0.0
 
 We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted into the digital void! ✨🗑️
 
-- 🎬 **Cleaner API**: Less boilerplate, more magic
-- ⚡ **Pre-caching**: Cache videos before you even need them
-- 🔑 **Custom cache keys**: Because URLs are overrated
-- 📦 **Better migration**: Your v3 cache won't vanish into the void
-- 🎭 **More humor**: 42% funnier error messages
+- **Cleaner API**: Less boilerplate, more magic
+- **Pre-caching**: Cache videos before you even need them
+- **Custom cache keys**: Because URLs are overrated
+- **Better migration**: Your v3 cache won't vanish into the void
+- **More humor**: 42% funnier error messages
 
 > [!CAUTION]
 >
-> **🚨 BREAKING CHANGES AHEAD!**  
+> **🚨 BREAKING CHANGES AHEAD!**
+>
 > Upgrading from v3.x.x? Check our **📖 [Migration Guide]** - it's actually entertaining to read! (No, seriously, we put memes in it.)
 
 ## Migrating from v3.x.x?
 
 Don't panic! We've got you covered. Check out our **📖 [Migration Guide]** - it's actually entertaining to read and includes:
 
-- 🎯 **Step-by-step migration instructions**
-- 🔧 **Automatic cache data migration**
-- 🐛 **Common issues and solutions**
+- **Step-by-step migration instructions**
+- **Automatic cache data migration**
+- **Common issues and solutions**
 - 😂 **Memes and jokes** _(because migration should be fun!)_
-
-```dart
-// Add this to your main() before runApp()
-import 'package:cached_video_player_plus/util/migration_utils.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await migrateCachedVideoDataToSharedPreferences(); // Magic migration! ✨
-  runApp(MyApp());
-}
-```
 
 ## 🚀 Quick Start
 
@@ -65,7 +55,7 @@ dependencies:
 
 ### 2. Follow video_player setup
 
-Follow the [video_player installation guide][setup] because we're standing on the shoulders of giants here! 🏔️
+Follow the [video_player setup guide][setup] because we're standing on the shoulders of giants here! 🏔️
 
 ### 3. Import and use
 
@@ -78,6 +68,8 @@ import 'package:video_player/video_player.dart';
 
 ```dart
 class VideoExample extends StatefulWidget {
+  const VideoExample({super.key});
+
   @override
   _VideoExampleState createState() => _VideoExampleState();
 }
@@ -218,8 +210,6 @@ dependency_overrides:
       ref: 54904e499a06d0364a2b3f4ca9789e5f829f1879
 ```
 
-_Why? Because dependency conflicts are like that one friend who always causes drama at parties._ 🎭
-
 ### 2. HLS and Streaming Videos Not Supported
 
 Sorry folks, HLS streams are like unicorns - beautiful but not cacheable! 🦄
@@ -262,11 +252,11 @@ _Credit to the community detectives who tracked this down!_ 🕵️‍♂️
 
 When you call `initialize()`, here's what happens behind the scenes:
 
-1. 🔍 **Check cache**: "Do we have this video already?"
-2. 📥 **Download if needed**: "Nope? Let's grab it!"
-3. 🎬 **Play from cache**: "Got it? Play from local storage!"
-4. 🕐 **Check expiry**: "Is this video older than my last haircut?"
-5. 🔄 **Re-download if stale**: "Yep, time for a refresh!"
+1. **Check cache**: "Do we have this video already?"
+2. **Download if needed**: "Nope? Let's grab it!"
+3. **Play from cache**: "Got it? Play from local storage!"
+4. **Check expiry**: "Is this video older than my last haircut?"
+5. **Re-download if stale**: "Yep, time for a refresh!"
 
 The magic happens in the background - your users just see buttery smooth playback! 🧈
 
@@ -282,19 +272,19 @@ _Every coffee helps fuel late-night coding sessions and the occasional existenti
 
 Check out our [example app](example/) for real-world usage patterns:
 
-- 📱 **Basic Playback**: Simple video caching
-- 🎬 **Chewie Integration**: Rich player UI with caching
-- 🚀 **Pre-caching**: Download videos before playback
-- 🛠️ **Advanced Cache Management**: Fine-tune your cache behavior
+- **Basic Playback**: Simple video caching
+- **Chewie Integration**: Rich player UI with caching
+- **Pre-caching**: Download videos before playback
+- **Advanced Cache Management**: Fine-tune your cache behavior
 
 ## 🤝 Contributing
 
 Found a bug? Have a feature request? Want to add more easter eggs to our documentation?
 
-1. 🔍 [Check existing issues][issues]
-2. 🐛 [Report bugs][issues_report_bug]
-3. 💡 [Request features][issues_request_feature]
-4. 🛠️ [Submit PRs][pull_requests]
+1. [Check existing issues][issues]
+2. [Report bugs][issues_report_bug]
+3. [Request features][issues_request_feature]
+4. [Submit PRs][pull_requests]
 
 _All contributions welcome! Even if it's just fixing our terrible jokes in the docs._ 😅
 
@@ -304,13 +294,13 @@ BSD 3-Clause License - see [LICENSE](LICENSE) file for details.
 
 _TL;DR: Use it, modify it, share it, just don't blame us if your cat videos take over the world._ 🐱🌍
 
-### If you liked the package, then please give it a [Like 👍🏼][package] and [Star ⭐][repository]
+## If you liked the package, then please give it a [Like 👍🏼][package] and [Star ⭐][repository]
 
 _Your support keeps this project alive and helps us add more features (and terrible puns)!_ ✨
 
 ---
 
-### 🎁 Bonus: Secret Message
+## 🎁 Bonus: Secret Message
 
 _For the curious developers who love Easter eggs, here's a special message for you. Decode it if you dare!_ 🕵️‍♂️
 
