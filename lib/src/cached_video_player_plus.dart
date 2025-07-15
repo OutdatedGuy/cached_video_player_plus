@@ -20,7 +20,7 @@ import 'video_player_storage.dart';
 /// ```dart
 /// final player = CachedVideoPlayerPlus.networkUrl(
 ///   Uri.parse('https://example.com/video.mp4'),
-///   invalidateCacheIfOlderThan: const Duration(days: 420),
+///   invalidateCacheIfOlderThan: const Duration(days: 42),
 /// );
 ///
 /// await player.initialize();

@@ -42,6 +42,17 @@ void main() async {
 
 _Don't worry, we'll clean up after ourselves - unlike that one roommate who never does the dishes._ 🧽✨
 
+### 🗝️ Cache Key Prefix Change (No Action Needed)
+
+In v4.0.0, the internal cache key prefix used for storing video cache metadata has changed:
+
+- **Before (v3.x.x):**
+  - `cached_video_player_plus_video_expiration_of_`
+- **After (v4.0.0):**
+  - `cached_video_player_plus_caching_time_of_`
+
+This change is handled automatically by the package and does **not** require any action from developers. It is noted here for reference and transparency. All cache management and migration utilities are aware of this change and will continue to work as expected.
+
 ## 🚨 Breaking Changes
 
 ### 1. API Architecture Change
@@ -649,6 +660,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -666,41 +679,41 @@ class VideoPlayerExample extends StatefulWidget {
 }
 
 class _VideoPlayerExampleState extends State<VideoPlayerExample> {
-  late CachedVideoPlayerPlus player;
+  late final CachedVideoPlayerPlus _player;
 
   @override
   void initState() {
     super.initState();
 
     // Example with new v4.0.0 features
-    player = CachedVideoPlayerPlus.networkUrl(
+    _player = CachedVideoPlayerPlus.networkUrl(
       Uri.parse(
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       ),
       // Default is now 69 days, set to 30 if you want old v3.x.x behavior
-      invalidateCacheIfOlderThan: const Duration(days: 420),
+      invalidateCacheIfOlderThan: const Duration(days: 30),
       // New v4.0.0 feature: custom cache key
       cacheKey: 'big_buck_bunny_demo',
       // New v4.0.0 feature: separate download headers
       httpHeaders: {
         'User-Agent': 'MyApp/1.0',
-        'Range': 'bytes=0-1024',
+        'Range': 'bytes=0-80085', // For amazing streaming experience
       },
       downloadHeaders: {
         'User-Agent': 'MyApp/1.0',
       },
     );
 
-    player.initialize().then((_) {
-      player.controller.setLooping(true);
-      player.controller.play();
+    _player.initialize().then((_) {
+      _player.controller.setLooping(true);
+      _player.controller.play();
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    player.dispose();
+    _player.dispose();
     super.dispose();
   }
 
@@ -733,13 +746,13 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
     return Scaffold(
       appBar: AppBar(title: const Text('Cached Video Player Plus v4.0.0')),
       body: Center(
-        child: player.isInitialized
+        child: _player.isInitialized
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AspectRatio(
-                    aspectRatio: player.controller.value.aspectRatio,
-                    child: VideoPlayer(player.controller),
+                    aspectRatio: _player.controller.value.aspectRatio,
+                    child: VideoPlayer(_player.controller),
                   ),
                   const SizedBox(height: 42), // The answer to life, universe, and spacing
                   Row(
@@ -747,19 +760,19 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          player.controller.value.isPlaying
-                              ? player.controller.pause()
-                              : player.controller.play();
+                          _player.controller.value.isPlaying
+                              ? _player.controller.pause()
+                              : _player.controller.play();
                           setState(() {});
                         },
                         icon: Icon(
-                          player.controller.value.isPlaying
+                          _player.controller.value.isPlaying
                               ? Icons.pause
                               : Icons.play_arrow,
                         ),
                       ),
                       IconButton(
-                        onPressed: () => player.removeFromCache(),
+                        onPressed: () => _player.removeFromCache(),
                         icon: const Icon(Icons.delete),
                         tooltip: 'Clear This Video Cache',
                       ),
@@ -777,11 +790,11 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Video Status: ${player.controller.value.isPlaying ? "Playing" : "Paused"}',
+                    'Video Status: ${_player.controller.value.isPlaying ? "Playing" : "Paused"}',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   Text(
-                    'Position: ${player.controller.value.position}',
+                    'Position: ${_player.controller.value.position}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
@@ -807,7 +820,9 @@ Cache videos before playing them:
 // Pre-cache a video without creating a player instance
 await CachedVideoPlayerPlus.preCacheVideo(
   Uri.parse('https://example.com/video.mp4'),
-  invalidateCacheIfOlderThan: const Duration(days: 420),
+  invalidateCacheIfOlderThan: const Duration(
+    days: 42,
+  ), // Set to Duration.zero to force immediate caching
 );
 ```
 
@@ -833,7 +848,7 @@ Use different headers for downloading vs streaming:
 final player = CachedVideoPlayerPlus.networkUrl(
   Uri.parse('https://example.com/video.mp4'),
   httpHeaders: {
-    'Range': 'bytes=0-1024',  // For streaming
+    'Range': 'bytes=0-80085',  // For immersive... streaming
   },
   downloadHeaders: {
     'Authorization': 'Bearer token',  // For downloading full file
