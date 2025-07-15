@@ -22,6 +22,8 @@ import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../src/cache_key_helpers.dart';
+
 /// Migrates cached video data from get_storage to shared_preferences.
 ///
 /// This method can be run multiple times without worry of overwriting
@@ -35,8 +37,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// This migration is necessary to ensures that existing cached video data is
 /// preserved and accessible through shared_preferences.
 Future<void> migrateCachedVideoDataToSharedPreferences() async {
-  const migrationKey = 'cached_video_player_plus_migration_completed_v4';
-
   try {
     // Check if migration has already been completed
     final asyncPrefs = SharedPreferencesAsync();
@@ -62,7 +62,10 @@ Future<void> migrateCachedVideoDataToSharedPreferences() async {
     for (final key in getStorageKeys) {
       final value = getStorage.read(key);
       if (value is int) {
-        await asyncPrefs.setInt(key, value);
+        await asyncPrefs.setInt(
+          key.replaceFirst(oldCacheKeyPrefix, cacheKeyPrefix),
+          value,
+        );
         migratedCount++;
       }
     }

@@ -4,24 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:video_player/video_player.dart';
 
+import 'cache_key_helpers.dart';
 import 'video_cache_manager.dart';
 import 'video_player_storage.dart';
-
-/// The default cache manager for video file caching operations.
-final _defaultCacheManager = VideoCacheManager();
-
-/// Global storage for cache metadata and expiration timestamps.
-final _storage = VideoPlayerStorage();
-
-/// Generates a storage key for the given [dataSource].
-String _getCacheKey(String dataSource) {
-  return 'cached_video_player_plus_video_expiration_of_${Uri.parse(dataSource)}';
-}
-
-/// Generates a storage key using the provided custom [cacheKey].
-String _getCustomCacheKey(String cacheKey) {
-  return 'cached_video_player_plus_video_expiration_of_$cacheKey';
-}
 
 /// A video player that wraps [VideoPlayerController] with intelligent
 /// caching capabilities using [flutter_cache_manager].
@@ -116,8 +101,8 @@ class CachedVideoPlayerPlus {
        package = null,
        _authHeaders = downloadHeaders ?? httpHeaders,
        _cacheKey = cacheKey != null
-           ? _getCustomCacheKey(cacheKey)
-           : _getCacheKey(url.toString()),
+           ? getCustomCacheKey(cacheKey)
+           : getCacheKey(url.toString()),
        _cacheManager = cacheManager ?? _defaultCacheManager;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a file.
@@ -269,6 +254,12 @@ class CachedVideoPlayerPlus {
   bool get _shouldUseCache {
     return dataSourceType == DataSourceType.network && !kIsWeb && !skipCache;
   }
+
+  /// The default cache manager for video file caching operations.
+  static final _defaultCacheManager = VideoCacheManager();
+
+  /// Default storage for cache metadata and expiration timestamps.
+  static final _storage = VideoPlayerStorage();
 
   /// Initializes the video player and sets up caching if applicable.
   ///
@@ -433,7 +424,7 @@ class CachedVideoPlayerPlus {
     CacheManager? cacheManager,
   }) async {
     final urlString = url.toString();
-    final cacheKey = _getCacheKey(urlString);
+    final cacheKey = getCacheKey(urlString);
 
     cacheManager ??= _defaultCacheManager;
 
@@ -458,7 +449,7 @@ class CachedVideoPlayerPlus {
     String cacheKey, {
     CacheManager? cacheManager,
   }) async {
-    cacheKey = _getCustomCacheKey(cacheKey);
+    cacheKey = getCustomCacheKey(cacheKey);
 
     cacheManager ??= _defaultCacheManager;
 
@@ -517,8 +508,8 @@ class CachedVideoPlayerPlus {
     cacheManager ??= _defaultCacheManager;
 
     final effectiveCacheKey = cacheKey != null
-        ? _getCustomCacheKey(cacheKey)
-        : _getCacheKey(url.toString());
+        ? getCustomCacheKey(cacheKey)
+        : getCacheKey(url.toString());
 
     // First check if the video is already cached
     FileInfo? cachedFile = await cacheManager.getFileFromCache(
