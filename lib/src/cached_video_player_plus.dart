@@ -530,14 +530,14 @@ class CachedVideoPlayerPlus {
           if (kDebugMode) {
             debugPrint('Cache of [$url] expired. Removing...');
           }
-          cacheManager.removeFile(effectiveCacheKey);
+          await cacheManager.removeFile(effectiveCacheKey);
           cachedFile = null;
         }
       } else {
         if (kDebugMode) {
           debugPrint('Cache of [$url] expired. Removing...');
         }
-        cacheManager.removeFile(effectiveCacheKey);
+        await cacheManager.removeFile(effectiveCacheKey);
         cachedFile = null;
       }
     }
