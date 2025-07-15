@@ -3,7 +3,7 @@
 The [video_player] plugin that went to therapy, worked on its commitment issues, and now actually remembers your videos! 🧠  
 Powered by the magic of [flutter_cache_manager] - because buffering wheels are so 2010.
 
-_Like video_player, but with a photographic memory and trust issues with the internet._ 📹✨
+_Like `video_player`, but with a photographic memory and trust issues with the internet._ 📹✨
 
 [![pub package][package_svg]][package]
 [![GitHub][license_svg]](LICENSE)
@@ -15,7 +15,7 @@ _Like video_player, but with a photographic memory and trust issues with the int
 
 **Cache videos seamlessly for offline playback**  
 **🚀 Zero buffering on repeat views** _(your users will love you for this!)_  
-**Drop-in replacement for video_player** _(well, mostly - see migration guide!)_  
+**Drop-in replacement for `video_player`** _(well, mostly - see migration guide!)_  
 **📱 Cross-platform support** _(Android, iOS, macOS, Web\*, Linux\*, Windows\*)_
 
 ## ✨ What's New in v4.0.0
@@ -229,7 +229,7 @@ If your cached videos show up as `.bin` files instead of proper video files, her
 
 **Root Cause**: The issue occurs when servers don't provide proper `Content-Type` headers for video files, causing `flutter_cache_manager` to save them with generic `.bin` extensions.
 
-**Solution**: Override the file extension in your flutter_cache_manager configuration:
+**Solution**: Override the file extension in your `flutter_cache_manager` configuration:
 
 ```yaml
 dependencies:
