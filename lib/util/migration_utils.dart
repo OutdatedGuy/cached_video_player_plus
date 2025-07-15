@@ -22,7 +22,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../src/cache_key_helpers.dart' show migrationKey;
+import '../src/cache_key_helpers.dart';
 
 /// Migrates cached video data from get_storage to shared_preferences.
 ///
@@ -62,7 +62,10 @@ Future<void> migrateCachedVideoDataToSharedPreferences() async {
     for (final key in getStorageKeys) {
       final value = getStorage.read(key);
       if (value is int) {
-        await asyncPrefs.setInt(key, value);
+        await asyncPrefs.setInt(
+          key.replaceFirst(oldCacheKeyPrefix, cacheKeyPrefix),
+          value,
+        );
         migratedCount++;
       }
     }

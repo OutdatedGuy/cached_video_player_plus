@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'cache_key_helpers.dart' show cacheTimePrefix;
+import 'cache_key_helpers.dart' show cacheKeyPrefix;
 
 /// Storage abstraction for cached video metadata.
 ///
@@ -45,9 +45,7 @@ class VideoPlayerStorage {
   /// This removes all keys that start with the video player prefix.
   Future<void> erase() async {
     final keys = await _asyncPrefs.getKeys();
-    final videoPlayerKeys = keys.where(
-      (key) => key.startsWith(cacheTimePrefix),
-    );
+    final videoPlayerKeys = keys.where((key) => key.startsWith(cacheKeyPrefix));
 
     for (final key in videoPlayerKeys) {
       await _asyncPrefs.remove(key);
