@@ -21,12 +21,12 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  chewie: ^1.12.1
   flutter:
     sdk: flutter
   flutter_cache_manager: ^3.4.1
-  video_player: ^2.10.0
-  chewie: ^1.12.1
   shared_preferences: ^2.5.3
+  video_player: ^2.10.0
 
 dependency_overrides:
   flutter_cache_manager:
