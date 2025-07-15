@@ -38,8 +38,8 @@ We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted int
 
 Don't panic! We've got you covered. Check out our **📖 [Migration Guide]** - it's actually entertaining to read and includes:
 
+- **Complete API reference changes**
 - **Step-by-step migration instructions**
-- **Automatic cache data migration**
 - **Common issues and solutions**
 - 😂 **Memes and jokes** _(because migration should be fun!)_
 
