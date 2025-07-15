@@ -1,3 +1,43 @@
+## 4.0.0
+
+_We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted into the digital void! ✨🗑️_
+
+**BREAKING CHANGES**
+
+- Complete API restructure: `CachedVideoPlayerPlusController` replaced with class-based `CachedVideoPlayerPlus` approach
+- Widget usage changed: Use `VideoPlayer(player.controller)` instead of `CachedVideoPlayerPlus(controller)`
+- Controller access: Video control methods now accessed through `.controller` property (e.g., `player.controller.play()`)
+- Storage migration: Switched from `get_storage` to `shared_preferences` for cache metadata storage
+- Method renames: `removeCurrentFileFromCache()` → `removeFromCache()`
+- Parameter type changes: `removeFileFromCache()` now takes `Uri` instead of `String`
+- Cache key prefix changed internally (handled automatically by migration utility)
+- Default cache duration increased from 30 days to 69 days _(Nice! 😎)_
+- Removed deprecated `CachedVideoPlayerPlusController.network()` constructor
+- Removed classes: `CachedVideoPlayerPlusValue`, `CachedVideoPlayerPlus` widget, `ClosedCaptionFile` implementations
+
+**Features**
+
+- feat: Pre-cache videos without creating player instances using `CachedVideoPlayerPlus.preCacheVideo()`
+- feat: Custom cache key support via `cacheKey` parameter for cleaner cache management _(because sometimes URLs are longer than a CVS receipt)_
+- feat: Custom cache manager support via `cacheManager` parameter
+- feat: Separate download headers via `downloadHeaders` parameter for authentication purposes
+- feat: Cache removal by custom cache key using `removeFileFromCacheByKey()`
+- feat: Automatic migration utility to preserve existing cached video data from v3.x.x
+- feat: Convenience property `player.isInitialized` for easier state checking
+
+**Fixes**
+
+- fix: Web platform cannot play cached videos - improved web compatibility
+- fix: Race condition in cache file removal by making it awaitable _(no more cache file musical chairs!)_
+- fix: StateError exception handling for uninitialized controller access
+
+**Chores**
+
+- chore: Updated dependencies to latest versions with Flutter 3.32 support
+- chore: Restructured from plugin to package architecture
+- chore: Enhanced documentation with migration guide and comprehensive examples _(now with 42% more humor!)_
+- chore: Updated example app to showcase full v4.0.0 feature set
+
 ## 3.0.3
 
 - refactor: lowered sdk constraints to support dart 3.0.0 and above
