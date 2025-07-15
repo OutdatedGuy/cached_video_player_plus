@@ -1,6 +1,6 @@
 name: cached_video_player_plus
 description: "The video_player plugin that went to therapy, worked on its commitment issues, and now actually remembers your videos!"
-version: 3.0.3
+version: 4.0.0
 homepage: https://outdatedguy.rocks
 repository: https://github.com/OutdatedGuy/cached_video_player_plus
 topics:
