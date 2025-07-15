@@ -32,7 +32,7 @@ We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted int
 >
 > **🚨 BREAKING CHANGES AHEAD!**
 >
-> Upgrading from v3.x.x? Check our **📖 [Migration Guide]** - it's actually entertaining to read! (No, seriously, we put memes in it.)
+> Version 4.0.0 introduces a total API restructuring, adding new features while maintaining all functionality. These changes introduce major breaking changes.
 
 ## Migrating from v3.x.x?
 
@@ -53,7 +53,7 @@ dependencies:
   video_player: ^2.10.0 # Don't forget this one!
 ```
 
-### 2. Follow video_player setup
+### 2. Follow `video_player` setup
 
 Follow the [video_player setup guide][setup] because we're standing on the shoulders of giants here! 🏔️
 
