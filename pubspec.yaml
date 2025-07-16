@@ -11,6 +11,9 @@ topics:
 funding:
   - https://coff.ee/outdatedguy
   - https://github.com/sponsors/OutdatedGuy
+screenshots:
+  - description: "This screenshot shows the futuristic video player with caching capabilities."
+    path: screenshots/thumbnail.jpg
 
 environment:
   sdk: ^3.0.0
