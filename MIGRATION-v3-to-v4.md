@@ -1,16 +1,16 @@
-# Migration Guide: v3.x.x → v4.0.0 🎬
+# Migration Guide: v3.x.x → v4 🎬
 
-This guide will help you migrate from `cached_video_player_plus` v3.x.x to v4.0.0.
+This guide will help you migrate from `cached_video_player_plus` v3.x.x to v4.
 
 ## Overview
 
-Version 4.0.0 introduces a major API restructure that simplifies usage while maintaining all existing functionality. The package now uses a class-based approach instead of the previous controller-widget pattern.
+Version 4 introduces a major API restructure that simplifies usage while maintaining all existing functionality. The package now uses a class-based approach instead of the previous controller-widget pattern.
 
 _Translation: We Marie Kondo'd the API - everything that doesn't spark joy got yeeted into the digital void!_ ✨🗑️
 
 ## 💿 Storage Migration: get_storage → shared_preferences
 
-Version 4.0.0 migrates from `get_storage` to `shared_preferences` for storing cached video metadata. This change improves compatibility and reduces dependencies.
+Version 4 migrates from `get_storage` to `shared_preferences` for storing cached video metadata. This change improves compatibility and reduces dependencies.
 
 ### 🔄 Automatic Migration
 
@@ -44,11 +44,11 @@ _Don't worry, we'll clean up after ourselves - unlike that one roommate who neve
 
 ### 🗝️ Cache Key Prefix Change (No Action Needed)
 
-In v4.0.0, the internal cache key prefix used for storing video cache metadata has changed:
+In v4, the internal cache key prefix used for storing video cache metadata has changed:
 
 - **Before (v3.x.x):**
   - `cached_video_player_plus_video_expiration_of_`
-- **After (v4.0.0):**
+- **After (v4):**
   - `cached_video_player_plus_caching_time_of_`
 
 This change is handled automatically by the package and does **not** require any action from developers. It is noted here for reference and transparency. All cache management and migration utilities are aware of this change and will continue to work as expected.
@@ -70,7 +70,7 @@ await controller.initialize();
 CachedVideoPlayerPlus(controller)
 ```
 
-**After (v4.0.0):**
+**After (v4):**
 
 ```dart
 // New class-based approach
@@ -126,7 +126,7 @@ final controller = CachedVideoPlayerPlusController.contentUri(
 ```
 
 ```dart
-// After (v4.0.0)
+// After (v4)
 // Network videos
 final player = CachedVideoPlayerPlus.networkUrl(
   Uri.parse('https://example.com/video.mp4'),
@@ -152,13 +152,13 @@ final player = CachedVideoPlayerPlus.contentUri(
 
 ### 4. Deprecated Constructor Removal
 
-The deprecated `CachedVideoPlayerPlusController.network()` constructor has been completely removed in v4.0.0:
+The deprecated `CachedVideoPlayerPlusController.network()` constructor has been completely removed in v4:
 
 ```dart
 // Before (v3.x.x) - This was already deprecated
 CachedVideoPlayerPlusController.network('https://example.com/video.mp4')
 
-// Use this instead (available in both v3.x.x and v4.0.0)
+// Use this instead (available in both v3.x.x and v4)
 CachedVideoPlayerPlus.networkUrl(Uri.parse('https://example.com/video.mp4'))
 ```
 
@@ -172,7 +172,7 @@ _We finally put the deprecated constructor out of its misery. It had a good run,
 // Before (v3.x.x)
 invalidateCacheIfOlderThan: const Duration(days: 30)  // Default was 30 days
 
-// After (v4.0.0)
+// After (v4)
 invalidateCacheIfOlderThan: const Duration(days: 69)  // Default is now 69 days
 ```
 
@@ -190,14 +190,14 @@ _Yes, we changed the default to 69 days. No, it's not a typo. Yes, we're adults 
 
 ### 8. New Methods Added
 
-v4.0.0 introduces several new methods not available in v3.x.x:
+v4 introduces several new methods not available in v3.x.x:
 
 - ✅ `removeFileFromCacheByKey(String cacheKey)` - Remove cached files by custom cache key
 - ✅ `preCacheVideo(Uri url)` - Pre-cache videos without creating a player instance
 
 ### 9. Constructor Parameter Changes
 
-**New Parameters in v4.0.0:**
+**New Parameters in v4:**
 
 - ✅ `downloadHeaders` - Separate headers for downloading vs streaming
 - ✅ `cacheKey` - Custom cache key instead of URL-based key
@@ -207,7 +207,7 @@ _More parameters = more power = more responsibility. With great caching comes gr
 
 ### 10. Controller Access Changes - Using .controller Property
 
-The biggest change in v4.0.0 is that most video operations now require accessing the `.controller` property. Here's what you need to know:
+The biggest change in v4 is that most video operations now require accessing the `.controller` property. Here's what you need to know:
 
 **Video Control Methods:**
 
@@ -221,7 +221,7 @@ controller.setLooping(true);
 ```
 
 ```dart
-// After (v4.0.0) - Access through .controller property
+// After (v4) - Access through .controller property
 player.controller.play();
 player.controller.pause();
 player.controller.setVolume(0.69);
@@ -243,7 +243,7 @@ controller.value.errorDescription;
 ```
 
 ```dart
-// After (v4.0.0)
+// After (v4)
 player.isInitialized;                    // Convenience property (new!)
 player.controller.value.isPlaying;       // Through controller
 player.controller.value.position;        // Through controller
@@ -267,7 +267,7 @@ controller.removeListener(listener);
 ```
 
 ```dart
-// After (v4.0.0)
+// After (v4)
 player.controller.addListener(() {
   // Handle state changes
   if (player.controller.value.hasError) {
@@ -292,7 +292,7 @@ Widget build(BuildContext context) {
 ```
 
 ```dart
-// After (v4.0.0)
+// After (v4)
 Widget build(BuildContext context) {
   return player.isInitialized
       ? AspectRatio(
@@ -631,7 +631,7 @@ await player.initialize();
 **Solution:** Use `.networkUrl()` instead:
 
 ```dart
-// Before (this was deprecated in v3.x.x and removed in v4.0.0)
+// Before (this was deprecated in v3.x.x and removed in v4)
 CachedVideoPlayerPlusController.network('https://example.com/video.mp4')
 
 // After
@@ -640,7 +640,7 @@ CachedVideoPlayerPlus.networkUrl(Uri.parse('https://example.com/video.mp4'))
 
 ## 📚 Complete Example
 
-Here's a complete working example for v4.0.0 that demonstrates the new features:
+Here's a complete working example for v4 that demonstrates the new features:
 
 _This example contains more features than a Swiss Army knife and is 42% more awesome than the previous version!_ 🔪✨
 
@@ -665,7 +665,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cached Video Player Plus v4.0.0 Demo',
+      title: 'Cached Video Player Plus v4 Demo',
       home: VideoPlayerExample(),
     );
   }
@@ -685,16 +685,16 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
   void initState() {
     super.initState();
 
-    // Example with new v4.0.0 features
+    // Example with new v4 features
     _player = CachedVideoPlayerPlus.networkUrl(
       Uri.parse(
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       ),
       // Default is now 69 days, set to 30 if you want old v3.x.x behavior
       invalidateCacheIfOlderThan: const Duration(days: 30),
-      // New v4.0.0 feature: custom cache key
+      // New v4 feature: custom cache key
       cacheKey: 'big_buck_bunny_demo',
-      // New v4.0.0 feature: separate download headers
+      // New v4 feature: separate download headers
       httpHeaders: {
         'User-Agent': 'MyApp/1.0',
         'Range': 'bytes=0-80085', // For amazing streaming experience
@@ -717,7 +717,7 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
     super.dispose();
   }
 
-  // Example of using new v4.0.0 features
+  // Example of using new v4 features
   Future<void> _preCacheAnotherVideo() async {
     await CachedVideoPlayerPlus.preCacheVideo(
       Uri.parse('https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4'),
@@ -744,7 +744,7 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Cached Video Player Plus v4.0.0')),
+      appBar: AppBar(title: const Text('Cached Video Player Plus v4')),
       body: Center(
         child: _player.isInitialized
             ? Column(
@@ -806,9 +806,9 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
 }
 ```
 
-## ✨ New Features in v4.0.0
+## ✨ New Features in v4
 
-v4.0.0 introduces several new features that weren't available in v3.x.x:
+v4 introduces several new features that weren't available in v3.x.x:
 
 _New features! Like getting surprise extra fries at the bottom of the bag, but for code! 🍟💻_
 
@@ -877,7 +877,7 @@ final player = CachedVideoPlayerPlus.networkUrl(
 
 ## 🚀 Benefits of Migration
 
-After migrating to v4.0.0, you'll benefit from:
+After migrating to v4, you'll benefit from:
 
 1. **Simpler API**: Less boilerplate code and more intuitive usage
 2. **Better Performance**: Optimized caching logic and debug mode checks
@@ -896,7 +896,7 @@ If you encounter issues during migration:
 3. Check [existing issues](https://github.com/OutdatedGuy/cached_video_player_plus/issues)
 4. Create a new issue with:
    - Your current v3.x.x code
-   - What you tried for v4.0.0
+   - What you tried for v4
    - The specific error messages
 
 _Remember: There are no stupid questions, only poorly documented APIs. We're here to help! 🤝💙_

@@ -18,7 +18,7 @@ _Like `video_player`, but with a photographic memory and trust issues with the i
 **Drop-in replacement for `video_player`** _(well, mostly - see migration guide!)_  
 **📱 Cross-platform support** _(Android, iOS, macOS, Web\*, Linux\*, Windows\*)_
 
-## ✨ What's New in v4.0.0
+## ✨ What's New in v4
 
 We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted into the digital void! ✨🗑️
 
@@ -32,7 +32,7 @@ We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted int
 >
 > **🚨 BREAKING CHANGES AHEAD!**
 >
-> Version 4.0.0 introduces a total API restructuring, adding new features while maintaining all functionality. These changes introduce major breaking changes.
+> Version 4 introduces a total API restructuring, adding new features while maintaining all functionality. These changes introduce major breaking changes.
 
 ## Migrating from v3.x.x?
 
