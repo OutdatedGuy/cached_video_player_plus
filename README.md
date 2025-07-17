@@ -49,7 +49,7 @@ Don't panic! We've got you covered. Check out our **📖 [Migration Guide]** - i
 
 ```yaml
 dependencies:
-  cached_video_player_plus: ^4.0.0
+  cached_video_player_plus: ^4.0.1
   video_player: ^2.10.0 # Don't forget this one!
 ```
 
@@ -198,7 +198,7 @@ If you're seeing cache files not deleting properly or multiple downloads of the 
 ```yaml
 # Add this to your pubspec.yaml
 dependencies:
-  cached_video_player_plus: ^4.0.0
+  cached_video_player_plus: ^4.0.1
   flutter_cache_manager: ^3.4.1
 
 # In your pubspec.yaml, override flutter_cache_manager with a version that has the fix
@@ -233,7 +233,7 @@ If your cached videos show up as `.bin` files instead of proper video files, her
 
 ```yaml
 dependencies:
-  cached_video_player_plus: ^4.0.0
+  cached_video_player_plus: ^4.0.1
   flutter_cache_manager: ^3.4.1
 
 # In your pubspec.yaml, override flutter_cache_manager with a version that has the fix

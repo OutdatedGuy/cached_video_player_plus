@@ -1,3 +1,12 @@
+## 4.0.1
+
+_Just some housekeeping! 🧹✨_
+
+- chore: Lowered Dart SDK constraints
+- chore: Added Windows and Linux support in example app
+- docs: Updated platform support details documentation
+- docs: Added screenshots for pub.dev _(because visuals matter!)_
+
 ## 4.0.0
 
 _We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted into the digital void! ✨🗑️_
