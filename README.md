@@ -208,12 +208,6 @@ await CachedVideoPlayerPlus.clearAllCache(); // *POOF* 💨
 If you're seeing cache files not deleting properly or multiple downloads of the same video:
 
 ```yaml
-# Add this to your pubspec.yaml
-dependencies:
-  cached_video_player_plus: ^4.0.1
-  flutter_cache_manager: ^3.4.1
-
-# In your pubspec.yaml, override flutter_cache_manager with a version that has the fix
 dependency_overrides:
   flutter_cache_manager:
     git:
@@ -244,11 +238,6 @@ If your cached videos show up as `.bin` files instead of proper video files, her
 **Solution**: Override the file extension in your `flutter_cache_manager` configuration:
 
 ```yaml
-dependencies:
-  cached_video_player_plus: ^4.0.1
-  flutter_cache_manager: ^3.4.1
-
-# In your pubspec.yaml, override flutter_cache_manager with a version that has the fix
 dependency_overrides:
   flutter_cache_manager:
     git:
