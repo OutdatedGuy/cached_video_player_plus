@@ -121,7 +121,7 @@ class _VideoExampleState extends State<VideoExample> {
 | **Android** |   ✅    |    ✅    | Full support _(chef's kiss!)_            |
 |   **iOS**   |   ✅    |    ✅    | Full support                             |
 |  **macOS**  |   ✅    |    ✅    | Full support                             |
-|   **Web**   |   ❌    |    ✅    | Uses browser cache _(meh...)_            |
+|   **Web**   |  ✅\*   |    ✅    | Uses browser cache _(meh...)_            |
 |  **Linux**  |   ✅    |   ✅\*   | Caching works, playback needs workaround |
 | **Windows** |   ✅    |   ✅\*   | Caching works, playback needs workaround |
 
