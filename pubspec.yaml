@@ -13,7 +13,7 @@ funding:
   - https://github.com/sponsors/OutdatedGuy
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.0.0
   flutter: ">=1.17.0"
 
 dependencies:
