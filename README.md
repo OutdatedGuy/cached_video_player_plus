@@ -147,6 +147,18 @@ final player = CachedVideoPlayerPlus.networkUrl(
 );
 ```
 
+### WASM Support ✨
+
+Flutter's WebAssembly (WASM) compilation is now supported! To use WASM compilation, you'll need to override the `get_storage` dependency since the original doesn't support WASM _(because some packages are like that one friend who refuses to upgrade their phone)_:
+
+```yaml
+dependency_overrides:
+  get_storage:
+    git:
+      url: https://github.com/OutdatedGuy/get_storage.git
+      ref: rewrite
+```
+
 ## 🎯 Advanced Features
 
 ### Pre-caching Videos

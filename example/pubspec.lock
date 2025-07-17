@@ -151,17 +151,18 @@ packages:
     dependency: transitive
     description:
       name: get
-      sha256: c79eeb4339f1f3deffd9ec912f8a923834bec55f7b49c9e882b8fef2c139d425
+      sha256: b3294002946e99314c341bff0b4f3094e631a1f8cf37785e93aa7c2f04b0768e
       url: "https://pub.dev"
     source: hosted
-    version: "4.7.2"
+    version: "5.0.0-release-candidate-9.3.2"
   get_storage:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: get_storage
-      sha256: "39db1fffe779d0c22b3a744376e86febe4ade43bf65e06eab5af707dc84185a2"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: rewrite
+      resolved-ref: "383486fff78ea6151924480d9f8b24377f63788e"
+      url: "https://github.com/OutdatedGuy/get_storage.git"
+    source: git
     version: "2.1.1"
   html:
     dependency: transitive
