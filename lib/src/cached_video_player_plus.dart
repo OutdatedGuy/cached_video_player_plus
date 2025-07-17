@@ -46,14 +46,14 @@ class CachedVideoPlayerPlus {
     this.closedCaptionFile,
     this.videoPlayerOptions,
     this.viewType = VideoViewType.textureView,
-  }) : dataSourceType = DataSourceType.asset,
-       formatHint = null,
-       httpHeaders = const <String, String>{},
-       _authHeaders = const <String, String>{},
-       invalidateCacheIfOlderThan = Duration.zero,
-       skipCache = true,
-       _cacheKey = '',
-       _cacheManager = _defaultCacheManager;
+  })  : dataSourceType = DataSourceType.asset,
+        formatHint = null,
+        httpHeaders = const <String, String>{},
+        _authHeaders = const <String, String>{},
+        invalidateCacheIfOlderThan = Duration.zero,
+        skipCache = true,
+        _cacheKey = '',
+        _cacheManager = _defaultCacheManager;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a network URL.
   ///
@@ -96,14 +96,14 @@ class CachedVideoPlayerPlus {
     this.skipCache = false,
     String? cacheKey,
     CacheManager? cacheManager,
-  }) : dataSource = url.toString(),
-       dataSourceType = DataSourceType.network,
-       package = null,
-       _authHeaders = downloadHeaders ?? httpHeaders,
-       _cacheKey = cacheKey != null
-           ? getCustomCacheKey(cacheKey)
-           : getCacheKey(url.toString()),
-       _cacheManager = cacheManager ?? _defaultCacheManager;
+  })  : dataSource = url.toString(),
+        dataSourceType = DataSourceType.network,
+        package = null,
+        _authHeaders = downloadHeaders ?? httpHeaders,
+        _cacheKey = cacheKey != null
+            ? getCustomCacheKey(cacheKey)
+            : getCacheKey(url.toString()),
+        _cacheManager = cacheManager ?? _defaultCacheManager;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a file.
   ///
@@ -118,15 +118,15 @@ class CachedVideoPlayerPlus {
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
     this.viewType = VideoViewType.textureView,
-  }) : dataSource = Uri.file(file.absolute.path).toString(),
-       dataSourceType = DataSourceType.file,
-       package = null,
-       formatHint = null,
-       _authHeaders = const <String, String>{},
-       invalidateCacheIfOlderThan = Duration.zero,
-       skipCache = true,
-       _cacheKey = '',
-       _cacheManager = _defaultCacheManager;
+  })  : dataSource = Uri.file(file.absolute.path).toString(),
+        dataSourceType = DataSourceType.file,
+        package = null,
+        formatHint = null,
+        _authHeaders = const <String, String>{},
+        invalidateCacheIfOlderThan = Duration.zero,
+        skipCache = true,
+        _cacheKey = '',
+        _cacheManager = _defaultCacheManager;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a contentUri.
   ///
@@ -139,20 +139,20 @@ class CachedVideoPlayerPlus {
     this.closedCaptionFile,
     this.videoPlayerOptions,
     this.viewType = VideoViewType.textureView,
-  }) : assert(
-         defaultTargetPlatform == TargetPlatform.android,
-         'CachedVideoPlayerPlus.contentUri is only supported on Android.',
-       ),
-       dataSource = contentUri.toString(),
-       dataSourceType = DataSourceType.contentUri,
-       package = null,
-       formatHint = null,
-       httpHeaders = const <String, String>{},
-       _authHeaders = const <String, String>{},
-       invalidateCacheIfOlderThan = Duration.zero,
-       skipCache = true,
-       _cacheKey = '',
-       _cacheManager = _defaultCacheManager;
+  })  : assert(
+          defaultTargetPlatform == TargetPlatform.android,
+          'CachedVideoPlayerPlus.contentUri is only supported on Android.',
+        ),
+        dataSource = contentUri.toString(),
+        dataSourceType = DataSourceType.contentUri,
+        package = null,
+        formatHint = null,
+        httpHeaders = const <String, String>{},
+        _authHeaders = const <String, String>{},
+        invalidateCacheIfOlderThan = Duration.zero,
+        skipCache = true,
+        _cacheKey = '',
+        _cacheManager = _defaultCacheManager;
 
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
@@ -329,33 +329,32 @@ class CachedVideoPlayerPlus {
         _cacheManager
             .downloadFile(dataSource, authHeaders: _authHeaders, key: _cacheKey)
             .then((_) {
-              _storage.write(
-                _cacheKey,
-                DateTime.timestamp().millisecondsSinceEpoch,
-              );
-              if (kDebugMode) {
-                debugPrint('Cached video [$dataSource] successfully.');
-              }
-            });
+          _storage.write(
+            _cacheKey,
+            DateTime.timestamp().millisecondsSinceEpoch,
+          );
+          if (kDebugMode) {
+            debugPrint('Cached video [$dataSource] successfully.');
+          }
+        });
       } else {
         isCacheAvailable = true;
       }
 
-      realDataSource = isCacheAvailable
-          ? cachedFile!.file.absolute.path
-          : dataSource;
+      realDataSource =
+          isCacheAvailable ? cachedFile!.file.absolute.path : dataSource;
     } else {
       realDataSource = dataSource;
     }
 
     _videoPlayerController = switch (dataSourceType) {
       DataSourceType.asset => VideoPlayerController.asset(
-        realDataSource,
-        package: package,
-        closedCaptionFile: closedCaptionFile,
-        videoPlayerOptions: videoPlayerOptions,
-        viewType: viewType,
-      ),
+          realDataSource,
+          package: package,
+          closedCaptionFile: closedCaptionFile,
+          videoPlayerOptions: videoPlayerOptions,
+          viewType: viewType,
+        ),
       DataSourceType.network when !isCacheAvailable =>
         VideoPlayerController.networkUrl(
           Uri.parse(realDataSource),
@@ -366,18 +365,18 @@ class CachedVideoPlayerPlus {
           viewType: viewType,
         ),
       DataSourceType.contentUri => VideoPlayerController.contentUri(
-        Uri.parse(realDataSource),
-        closedCaptionFile: closedCaptionFile,
-        videoPlayerOptions: videoPlayerOptions,
-        viewType: viewType,
-      ),
+          Uri.parse(realDataSource),
+          closedCaptionFile: closedCaptionFile,
+          videoPlayerOptions: videoPlayerOptions,
+          viewType: viewType,
+        ),
       _ => VideoPlayerController.file(
-        File(realDataSource),
-        closedCaptionFile: closedCaptionFile,
-        videoPlayerOptions: videoPlayerOptions,
-        httpHeaders: httpHeaders,
-        viewType: viewType,
-      ),
+          File(realDataSource),
+          closedCaptionFile: closedCaptionFile,
+          videoPlayerOptions: videoPlayerOptions,
+          httpHeaders: httpHeaders,
+          viewType: viewType,
+        ),
     };
 
     return _videoPlayerController.initialize().then((_) {
