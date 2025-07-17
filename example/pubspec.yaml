@@ -37,6 +37,10 @@ dependency_overrides:
       url: https://github.com/Baseflow/flutter_cache_manager.git
       path: flutter_cache_manager
       ref: 54904e499a06d0364a2b3f4ca9789e5f829f1879
+  get_storage:
+    git:
+      url: https://github.com/OutdatedGuy/get_storage.git
+      ref: rewrite
 
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to
