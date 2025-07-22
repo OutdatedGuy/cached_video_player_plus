@@ -15,13 +15,13 @@ screenshots:
   - description: "A sleek, futuristic video player, designed for seamless streaming and robust caching performance. Experience cutting-edge visuals and uninterrupted playback."
     path: screenshots/thumbnail.png
   - description: "Example of Basic Video Playback on Android."
-    path: screenshots/Android Basic Playback.webp
+    path: screenshots/Android-Basic-Playback.webp
   - description: "Example of Chewie Integration on iOS."
-    path: screenshots/iOS Chewie Integration.webp
+    path: screenshots/iOS-Chewie-Integration.webp
   - description: "Example of Pre-Caching on macOS."
-    path: screenshots/macOS Pre-Caching.webp
+    path: screenshots/macOS-Pre-Caching.webp
   - description: "Example of Advance Cache Management on Windows."
-    path: screenshots/Windows Advance Cache Management.webp
+    path: screenshots/Windows-Advance-Cache-Management.webp
 
 environment:
   sdk: ^3.0.0
