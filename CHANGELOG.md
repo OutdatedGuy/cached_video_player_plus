@@ -1,3 +1,11 @@
+## 4.0.1+1
+
+_Documentation improvements and shiny new demos! ✨_
+
+- docs: Added live demos section with platform-specific examples _(because seeing is believing!)_
+- docs: Updated screenshots and improved descriptions for pub.dev
+- docs: Added WASM (WebAssembly) support instructions for Flutter web
+
 ## 4.0.1
 
 _Just some housekeeping! 🧹✨_
