@@ -43,6 +43,18 @@ Don't panic! We've got you covered. Check out our **📖 [Migration Guide]** - i
 - **Common issues and solutions**
 - 😂 **Memes and jokes** _(because migration should be fun!)_
 
+## 📱 Live Demos
+
+See `cached_video_player_plus` in action across different platforms:
+
+| Basic Playback (Android)  | Chewie Integration (iOS)  |
+| :-----------------------: | :-----------------------: |
+| ![Android Basic Playback] | ![iOS Chewie Integration] |
+
+| Pre-Caching (macOS)  | Advanced Cache Management (Windows) |
+| :------------------: | :---------------------------------: |
+| ![macOS Pre-Caching] | ![Windows Advance Cache Management] |
+
 ## 🚀 Quick Start
 
 ### 1. Add to pubspec.yaml
@@ -341,3 +353,10 @@ _Hint: It's ASCII encoded in 8-bit binary. Good luck, brave decoder! 🤖_
 [video_player_win]: https://pub.dev/packages/video_player_win
 [video_player_media_kit]: https://pub.dev/packages/video_player_media_kit
 [setup]: https://pub.dev/packages/video_player#setup
+
+<!-- Demos -->
+
+[Android Basic Playback]: screenshots/Android-Basic-Playback.webp
+[iOS Chewie Integration]: screenshots/iOS-Chewie-Integration.webp
+[macOS Pre-Caching]: screenshots/macOS-Pre-Caching.webp
+[Windows Advance Cache Management]: screenshots/Windows-Advance-Cache-Management.webp
