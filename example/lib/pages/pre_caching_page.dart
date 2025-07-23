@@ -51,8 +51,9 @@ class _PreCachingPageState extends State<PreCachingPage> {
   DataSourceType? _dataSourceType;
 
   Future<void> _playVideo(_VideoInfo videoInfo) async {
+    await _player?.dispose();
+
     setState(() {
-      _player?.dispose();
       _player = CachedVideoPlayerPlus.networkUrl(videoInfo.url);
       _selectedVideo = videoInfo;
     });
