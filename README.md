@@ -219,6 +219,10 @@ await CachedVideoPlayerPlus.clearAllCache(); // *POOF* 💨
 
 If you're seeing cache files not deleting properly or multiple downloads of the same video:
 
+**Root Cause**: The `flutter_cache_manager` with the fixed bug is not yet published on pub.dev, so we need to override it in our `pubspec.yaml`.
+
+**Solution**: Add the following dependency override to your `pubspec.yaml`:
+
 ```yaml
 dependency_overrides:
   flutter_cache_manager:
