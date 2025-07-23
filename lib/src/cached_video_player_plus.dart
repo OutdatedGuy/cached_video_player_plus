@@ -388,10 +388,11 @@ class CachedVideoPlayerPlus {
   ///
   /// Call this method when the video player is no longer needed to free up
   /// resources and prevent memory leaks.
-  void dispose() {
+  Future<void> dispose() {
     if (_isInitialized) {
-      _videoPlayerController.dispose();
+      return _videoPlayerController.dispose();
     }
+    return Future.value();
   }
 
   /// Removes the cached file for this video player's data source.
