@@ -1,3 +1,12 @@
+## 4.0.2
+
+_Bug fixes and documentation improvements! �📚_
+
+- fix: Dispose method not asynchronous _(technically breaking, but unlikely to affect real usage)_
+- docs: Fixed desktop demo sizing issue for better user experience
+- docs: Updated README with cache manager override instructions
+- docs: Improved iOS Chewie demo documentation
+
 ## 4.0.1+1
 
 _Documentation improvements and shiny new demos! ✨_
