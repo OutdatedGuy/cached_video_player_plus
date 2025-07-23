@@ -51,9 +51,13 @@ See `cached_video_player_plus` in action across different platforms:
 | :-----------------------: | :-----------------------: |
 | ![Android Basic Playback] | ![iOS Chewie Integration] |
 
-| Pre-Caching (macOS)  | Advanced Cache Management (Windows) |
-| :------------------: | :---------------------------------: |
-| ![macOS Pre-Caching] | ![Windows Advance Cache Management] |
+| Pre-Caching (macOS)  |
+| :------------------: |
+| ![macOS Pre-Caching] |
+
+| Advanced Cache Management (Windows) |
+| :---------------------------------: |
+| ![Windows Advance Cache Management] |
 
 ## 🚀 Quick Start
 
