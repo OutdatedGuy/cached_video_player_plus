@@ -295,6 +295,7 @@ class CachedVideoPlayerPlus {
       if (cachedFile != null) {
         final cachedElapsedMillis = await _storage.read(_cacheKey);
 
+        bool isCacheExpired = true;
         if (cachedElapsedMillis != null) {
           final now = DateTime.timestamp();
           final cachedDate = DateTime.fromMillisecondsSinceEpoch(
@@ -309,14 +310,10 @@ class CachedVideoPlayerPlus {
             );
           }
 
-          if (difference > invalidateCacheIfOlderThan) {
-            if (kDebugMode) {
-              debugPrint('Cache of [$dataSource] expired. Removing...');
-            }
-            _cacheManager.removeFile(_cacheKey);
-            cachedFile = null;
-          }
-        } else {
+          isCacheExpired = difference > invalidateCacheIfOlderThan;
+        }
+
+        if (isCacheExpired) {
           if (kDebugMode) {
             debugPrint('Cache of [$dataSource] expired. Removing...');
           }
@@ -519,6 +516,7 @@ class CachedVideoPlayerPlus {
     if (cachedFile != null) {
       final cachedElapsedMillis = await _storage.read(effectiveCacheKey);
 
+      bool isCacheExpired = true;
       if (cachedElapsedMillis != null) {
         final now = DateTime.timestamp();
         final cachedDate = DateTime.fromMillisecondsSinceEpoch(
@@ -526,14 +524,10 @@ class CachedVideoPlayerPlus {
         );
         final difference = now.difference(cachedDate);
 
-        if (difference > invalidateCacheIfOlderThan) {
-          if (kDebugMode) {
-            debugPrint('Cache of [$url] expired. Removing...');
-          }
-          await cacheManager.removeFile(effectiveCacheKey);
-          cachedFile = null;
-        }
-      } else {
+        isCacheExpired = difference > invalidateCacheIfOlderThan;
+      }
+
+      if (isCacheExpired) {
         if (kDebugMode) {
           debugPrint('Cache of [$url] expired. Removing...');
         }
