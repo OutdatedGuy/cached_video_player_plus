@@ -115,9 +115,8 @@ class _AdvanceCacheManagementPageState
         Uri.parse(_videoUrls[_selectedIndex].url),
         cacheKey: _customKey,
         cacheManager: _customCacheManager,
-        invalidateCacheIfOlderThan: _forceFetch
-            ? Duration.zero
-            : const Duration(days: 42),
+        invalidateCacheIfOlderThan:
+            _forceFetch ? Duration.zero : const Duration(days: 42),
       );
     } finally {
       if (mounted) setState(() => _isCaching = false);
@@ -227,9 +226,8 @@ class _AdvanceCacheManagementPageState
                       ? _SmallLoader()
                       : const Icon(Icons.cloud_download),
                   label: const Text('Cache It'),
-                  onPressed: _isReady && _customKey.isNotEmpty
-                      ? _cacheVideo
-                      : null,
+                  onPressed:
+                      _isReady && _customKey.isNotEmpty ? _cacheVideo : null,
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(foregroundColor: Colors.red),

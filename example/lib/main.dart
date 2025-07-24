@@ -78,9 +78,8 @@ class HomePage extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final crossAxisCount = constraints.maxWidth > 700 ? 2 : 1;
-                    final childAspectRatio = constraints.maxWidth > 1000
-                        ? 4.5
-                        : 3.14;
+                    final childAspectRatio =
+                        constraints.maxWidth > 1000 ? 4.5 : 3.14;
 
                     return GridView.count(
                       crossAxisCount: crossAxisCount,
@@ -189,8 +188,8 @@ class _FeatureCard extends StatelessWidget {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
