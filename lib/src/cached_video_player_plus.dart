@@ -118,7 +118,7 @@ class CachedVideoPlayerPlus {
     this.videoPlayerOptions,
     this.httpHeaders = const <String, String>{},
     this.viewType = VideoViewType.textureView,
-  })  : dataSource = Uri.file(file.absolute.path).toString(),
+  })  : dataSource = file.absolute.path,
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
