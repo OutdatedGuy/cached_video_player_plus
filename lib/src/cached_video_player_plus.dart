@@ -274,9 +274,7 @@ class CachedVideoPlayerPlus {
   /// Returns a [Future] that completes when initialization is finished.
   Future<void> initialize() async {
     if (_isInitialized) {
-      if (kDebugMode) {
-        debugPrint('CachedVideoPlayerPlus is already initialized.');
-      }
+      _debugPrint('CachedVideoPlayerPlus is already initialized.');
       return;
     }
 
@@ -286,11 +284,7 @@ class CachedVideoPlayerPlus {
     if (_shouldUseCache) {
       FileInfo? cachedFile = await _cacheManager.getFileFromCache(_cacheKey);
 
-      if (kDebugMode) {
-        debugPrint(
-          'Cached video of [$dataSource] is: ${cachedFile?.file.path}',
-        );
-      }
+      _debugPrint('Cached video of [$dataSource] is: ${cachedFile?.file.path}');
 
       if (cachedFile != null) {
         final cachedElapsedMillis = await _storage.read(_cacheKey);
@@ -303,20 +297,16 @@ class CachedVideoPlayerPlus {
           );
           final difference = now.difference(cachedDate);
 
-          if (kDebugMode) {
-            debugPrint(
-              'Cache for [$dataSource] valid till: '
-              '${cachedDate.add(invalidateCacheIfOlderThan)}',
-            );
-          }
+          _debugPrint(
+            'Cache for [$dataSource] valid till: '
+            '${cachedDate.add(invalidateCacheIfOlderThan)}',
+          );
 
           isCacheExpired = difference > invalidateCacheIfOlderThan;
         }
 
         if (isCacheExpired) {
-          if (kDebugMode) {
-            debugPrint('Cache of [$dataSource] expired. Removing...');
-          }
+          _debugPrint('Cache of [$dataSource] expired. Removing...');
           _cacheManager.removeFile(_cacheKey);
           cachedFile = null;
         }
@@ -330,9 +320,7 @@ class CachedVideoPlayerPlus {
             _cacheKey,
             DateTime.timestamp().millisecondsSinceEpoch,
           );
-          if (kDebugMode) {
-            debugPrint('Cached video [$dataSource] successfully.');
-          }
+          _debugPrint('Cached video [$dataSource] successfully.');
         });
       } else {
         isCacheAvailable = true;
@@ -528,9 +516,7 @@ class CachedVideoPlayerPlus {
       }
 
       if (isCacheExpired) {
-        if (kDebugMode) {
-          debugPrint('Cache of [$url] expired. Removing...');
-        }
+        _debugPrint('Cache of [$url] expired. Removing...');
         await cacheManager.removeFile(effectiveCacheKey);
         cachedFile = null;
       }
@@ -549,9 +535,14 @@ class CachedVideoPlayerPlus {
         DateTime.timestamp().millisecondsSinceEpoch,
       );
 
-      if (kDebugMode) {
-        debugPrint('Pre-Cached video [$url] successfully.');
-      }
+      _debugPrint('Pre-Cached video [$url] successfully.');
     }
+  }
+}
+
+/// Checks if [kDebugMode] is enabled and prints a debug message.
+void _debugPrint(String? message, {int? wrapWidth}) {
+  if (kDebugMode) {
+    debugPrint(message, wrapWidth: wrapWidth);
   }
 }
