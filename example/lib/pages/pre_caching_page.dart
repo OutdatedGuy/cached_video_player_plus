@@ -86,7 +86,7 @@ class _PreCachingPageState extends State<PreCachingPage> {
                 _selectedVideo == null
                     ? 'No video playing. (The suspense is killing me!)'
                     : 'Now playing: ${_selectedVideo!.title} '
-                          'from "${_dataSourceType?.name}"',
+                        'from "${_dataSourceType?.name}"',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
@@ -118,7 +118,7 @@ class _PreCachingPageState extends State<PreCachingPage> {
             Expanded(
               child: ListView.separated(
                 itemCount: _videos.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final videoInfo = _videos[index];
                   return _VideoOptionTile(
@@ -182,9 +182,8 @@ class _VideoOptionTileState extends State<_VideoOptionTile> {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             child: Flex(
               direction: isWide ? Axis.horizontal : Axis.vertical,
-              crossAxisAlignment: isWide
-                  ? CrossAxisAlignment.center
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isWide ? CrossAxisAlignment.center : CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
@@ -213,16 +212,16 @@ class _VideoOptionTileState extends State<_VideoOptionTile> {
                       icon: _isPreCaching
                           ? _SmallLoader()
                           : _isPreCached
-                          ? const Icon(Icons.check_circle, color: Colors.green)
-                          : const Icon(Icons.download),
+                              ? const Icon(Icons.check_circle,
+                                  color: Colors.green)
+                              : const Icon(Icons.download),
                       label: _isPreCaching
                           ? const Text('Caching...')
                           : _isPreCached
-                          ? const Text('Cached')
-                          : const Text('Cache'),
-                      onPressed: _isPreCaching || _isPreCached
-                          ? null
-                          : _cacheVideo,
+                              ? const Text('Cached')
+                              : const Text('Cache'),
+                      onPressed:
+                          _isPreCaching || _isPreCached ? null : _cacheVideo,
                     ),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
