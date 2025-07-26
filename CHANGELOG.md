@@ -1,3 +1,10 @@
+## 4.0.3
+
+_Bug fixes and refactoring improvements! 🐛✨_
+
+- fix: `CachedVideoPlayerPlus.file` not working properly. Thanks [@wlodzix](https://github.com/wlodzix) for [#103](https://github.com/OutdatedGuy/cached_video_player_plus/pull/103)
+- refactor: internal code improvements and cleanup _(because even code needs a spa day sometimes!)_
+
 ## 4.0.2
 
 _Bug fixes and documentation improvements! �📚_
