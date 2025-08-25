@@ -1,3 +1,10 @@
+## 4.0.4
+
+_Bug fixes and Flutter updates! 🐛⚡_
+
+- fix: `isInitialized` is false even after video is initialized _(because even booleans need therapy sometimes!)_
+- chore: Updated package and example app to Flutter 3.35
+
 ## 4.0.3
 
 _Bug fixes and refactoring improvements! 🐛✨_
@@ -7,7 +14,7 @@ _Bug fixes and refactoring improvements! 🐛✨_
 
 ## 4.0.2
 
-_Bug fixes and documentation improvements! �📚_
+_Bug fixes and documentation improvements! 🐛📚_
 
 - fix: Dispose method not asynchronous _(technically breaking, but unlikely to affect real usage)_
 - docs: Fixed desktop demo sizing issue for better user experience
