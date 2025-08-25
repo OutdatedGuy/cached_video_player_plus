@@ -364,9 +364,8 @@ class CachedVideoPlayerPlus {
         ),
     };
 
-    return _videoPlayerController.initialize().then((_) {
-      _isInitialized = true;
-    });
+    await _videoPlayerController.initialize();
+    _isInitialized = true;
   }
 
   /// Disposes of the video player and releases resources.
