@@ -1,9 +1,15 @@
-/// Storage abstraction for cached video metadata.
-abstract interface class IVideoPlayerStorage {
+/// An interface class for storing video related data.
+///
+/// The interface can be implemented to store any type of data.
+///
+/// See also:
+///  * [IVideoPlayerMetadataStorage], which is an interface to stores
+///    video metadata with int values.
+abstract interface class IVideoPlayerStorage<T extends Object> {
   /// Reads a value from storage.
   ///
   /// Returns the stored value for the given [key], or null if not found.
-  Future<int?> read(String key);
+  Future<T?> read(String key);
 
   /// Writes a value to storage.
   ///
@@ -20,3 +26,7 @@ abstract interface class IVideoPlayerStorage {
   /// This removes all keys that start with the video player prefix.
   Future<void> erase();
 }
+
+/// An interface class for storing video metadata items with int values.
+abstract interface class IVideoPlayerMetadataStorage
+    implements IVideoPlayerStorage<int> {}

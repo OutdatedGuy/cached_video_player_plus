@@ -5,18 +5,18 @@ import 'i_video_player_storage.dart';
 
 /// This class handles the storage of cache expiration timestamps and provides
 /// migration functionality from get_storage to shared_preferences.
-class VideoPlayerStorage implements IVideoPlayerStorage {
+class VideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
   /// SharedPreferences instance for storing cache metadata.
   final _asyncPrefs = SharedPreferencesAsync();
 
   /// Singleton instance of VideoPlayerStorage.
-  static final _instance = VideoPlayerStorage._internal();
+  static final _instance = VideoPlayerMetadataStorage._internal();
 
   /// Private constructor for singleton pattern implementation.
-  VideoPlayerStorage._internal();
+  VideoPlayerMetadataStorage._internal();
 
   /// Factory constructor that returns the singleton instance.
-  factory VideoPlayerStorage() => _instance;
+  factory VideoPlayerMetadataStorage() => _instance;
 
   @override
   Future<int?> read(String key) {

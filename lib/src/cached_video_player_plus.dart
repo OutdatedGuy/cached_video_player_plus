@@ -102,7 +102,7 @@ class CachedVideoPlayerPlus {
     this.skipCache = false,
     String? cacheKey,
     CacheManager? cacheManager,
-    IVideoPlayerStorage? metadataStorage,
+    IVideoPlayerMetadataStorage? metadataStorage,
   })  : dataSource = url.toString(),
         dataSourceType = DataSourceType.network,
         package = null,
@@ -229,10 +229,10 @@ class CachedVideoPlayerPlus {
   /// Defaults to [VideoCacheManager] if not provided.
   final CacheManager _cacheManager;
 
-  /// The [IVideoPlayerStorage] instance used for caching video metadata.
+  /// The [IVideoPlayerMetadataStorage] instance used for caching video metadata.
   ///
-  /// Defaults to [VideoPlayerStorage] if not provided.
-  final IVideoPlayerStorage _metadataStorage;
+  /// Defaults to [VideoPlayerMetadataStorage] if not provided.
+  final IVideoPlayerMetadataStorage _metadataStorage;
 
   /// The underlying video player controller that handles actual video playback.
   late VideoPlayerController _videoPlayerController;
@@ -409,10 +409,10 @@ class CachedVideoPlayerPlus {
   static CacheManager cacheManager = defaultCacheManager;
 
   /// Default storage for cache metadata and expiration timestamps.
-  static final defaultMetadataStorage = VideoPlayerStorage();
+  static final defaultMetadataStorage = VideoPlayerMetadataStorage();
 
   /// The globally used storage for video file metadata.
-  static IVideoPlayerStorage metadataStorage = defaultMetadataStorage;
+  static IVideoPlayerMetadataStorage metadataStorage = defaultMetadataStorage;
 
   /// Removes the cached file for the specified [url] from the cache.
   ///
@@ -425,14 +425,14 @@ class CachedVideoPlayerPlus {
   /// instance. If not provided, the default [VideoCacheManager] will be used.
   ///
   /// The [metadataStorage] parameter allows specifying a custom
-  /// [IVideoPlayerStorage] instance. If not provided, the default
-  /// [VideoPlayerStorage] will be used.
+  /// [IVideoPlayerMetadataStorage] instance. If not provided, the default
+  /// [VideoPlayerMetadataStorage] will be used.
   ///
   /// Both the cached video file and its expiration metadata are deleted.
   static Future<void> removeFileFromCache(
     Uri url, {
     CacheManager? cacheManager,
-    IVideoPlayerStorage? metadataStorage,
+    IVideoPlayerMetadataStorage? metadataStorage,
   }) async {
     final urlString = url.toString();
     final cacheKey = getCacheKey(urlString);
@@ -457,14 +457,14 @@ class CachedVideoPlayerPlus {
   /// instance. If not provided, the default [VideoCacheManager] will be used.
   ///
   /// The [metadataStorage] parameter allows specifying a custom
-  /// [IVideoPlayerStorage] instance. If not provided, the default
-  /// [VideoPlayerStorage] will be used.
+  /// [IVideoPlayerMetadataStorage] instance. If not provided, the default
+  /// [VideoPlayerMetadataStorage] will be used.
   ///
   /// Both the cached video file and its expiration metadata are deleted.
   static Future<void> removeFileFromCacheByKey(
     String cacheKey, {
     CacheManager? cacheManager,
-    IVideoPlayerStorage? metadataStorage,
+    IVideoPlayerMetadataStorage? metadataStorage,
   }) async {
     cacheKey = getCustomCacheKey(cacheKey);
 
@@ -487,14 +487,14 @@ class CachedVideoPlayerPlus {
   /// instance. If not provided, the default [VideoCacheManager] will be used.
   ///
   /// The [metadataStorage] parameter allows specifying a custom
-  /// [IVideoPlayerStorage] instance. If not provided, the default
-  /// [VideoPlayerStorage] will be used.
+  /// [IVideoPlayerMetadataStorage] instance. If not provided, the default
+  /// [VideoPlayerMetadataStorage] will be used.
   ///
   /// This operation cannot be undone. All cached videos will need to be
   /// re-downloaded from their original sources.
   static Future<void> clearAllCache({
     CacheManager? cacheManager,
-    IVideoPlayerStorage? metadataStorage,
+    IVideoPlayerMetadataStorage? metadataStorage,
   }) async {
     cacheManager ??= CachedVideoPlayerPlus.cacheManager;
     metadataStorage ??= CachedVideoPlayerPlus.metadataStorage;
@@ -529,15 +529,15 @@ class CachedVideoPlayerPlus {
   /// [VideoCacheManager] will be used.
   ///
   /// The [metadataStorage] parameter allows specifying a custom
-  /// [IVideoPlayerStorage] for storing cache metadata. If not provided,
-  /// the default [VideoPlayerStorage] will be used.
+  /// [IVideoPlayerMetadataStorage] for storing cache metadata. If not provided,
+  /// the default [VideoPlayerMetadataStorage] will be used.
   static Future<void> preCacheVideo(
     Uri url, {
     Duration invalidateCacheIfOlderThan = const Duration(days: 69),
     Map<String, String> downloadHeaders = const <String, String>{},
     String? cacheKey,
     CacheManager? cacheManager,
-    IVideoPlayerStorage? metadataStorage,
+    IVideoPlayerMetadataStorage? metadataStorage,
   }) async {
     cacheManager ??= CachedVideoPlayerPlus.cacheManager;
     metadataStorage ??= CachedVideoPlayerPlus.metadataStorage;
