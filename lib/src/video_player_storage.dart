@@ -4,8 +4,6 @@ import 'cache_key_helpers.dart' show cacheKeyPrefix;
 
 /// Storage abstraction for cached video metadata.
 abstract interface class IVideoPlayerStorage {
-  IVideoPlayerStorage(); // Storage cannot be a constant.
-
   /// Reads a value from storage.
   ///
   /// Returns the stored value for the given [key], or null if not found.
