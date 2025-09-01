@@ -53,8 +53,8 @@ class CachedVideoPlayerPlus {
         invalidateCacheIfOlderThan = Duration.zero,
         skipCache = true,
         _cacheKey = '',
-        _cacheManager = _defaultCacheManager,
-        _storage = _defaultStorage;
+        _cacheManager = defaultCacheManager,
+        _storage = defaultStorage;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a network URL.
   ///
@@ -105,8 +105,8 @@ class CachedVideoPlayerPlus {
         _cacheKey = cacheKey != null
             ? getCustomCacheKey(cacheKey)
             : getCacheKey(url.toString()),
-        _cacheManager = cacheManager ?? _defaultCacheManager,
-        _storage = storage ?? _defaultStorage;
+        _cacheManager = cacheManager ?? defaultCacheManager,
+        _storage = storage ?? defaultStorage;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a file.
   ///
@@ -129,8 +129,8 @@ class CachedVideoPlayerPlus {
         invalidateCacheIfOlderThan = Duration.zero,
         skipCache = true,
         _cacheKey = '',
-        _cacheManager = _defaultCacheManager,
-        _storage = _defaultStorage;
+        _cacheManager = defaultCacheManager,
+        _storage = defaultStorage;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a contentUri.
   ///
@@ -156,8 +156,8 @@ class CachedVideoPlayerPlus {
         invalidateCacheIfOlderThan = Duration.zero,
         skipCache = true,
         _cacheKey = '',
-        _cacheManager = _defaultCacheManager,
-        _storage = _defaultStorage;
+        _cacheManager = defaultCacheManager,
+        _storage = defaultStorage;
 
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
@@ -264,12 +264,6 @@ class CachedVideoPlayerPlus {
   bool get _shouldUseCache {
     return dataSourceType == DataSourceType.network && !kIsWeb && !skipCache;
   }
-
-  /// The default cache manager for video file caching operations.
-  static final _defaultCacheManager = VideoCacheManager();
-
-  /// Default storage for cache metadata and expiration timestamps.
-  static final _defaultStorage = VideoPlayerStorage();
 
   /// Initializes the video player and sets up caching if applicable.
   ///
@@ -402,6 +396,12 @@ class CachedVideoPlayerPlus {
     ]);
   }
 
+  /// The default cache manager for video file caching operations.
+  static CacheManager defaultCacheManager = VideoCacheManager();
+
+  /// Default storage for cache metadata and expiration timestamps.
+  static IVideoPlayerStorage defaultStorage = VideoPlayerStorage();
+
   /// Removes the cached file for the specified [url] from the cache.
   ///
   /// Use this static method to remove specific cached videos by their URL.
@@ -421,8 +421,8 @@ class CachedVideoPlayerPlus {
     final urlString = url.toString();
     final cacheKey = getCacheKey(urlString);
 
-    cacheManager ??= _defaultCacheManager;
-    storage ??= _defaultStorage;
+    cacheManager ??= defaultCacheManager;
+    storage ??= defaultStorage;
 
     await Future.wait([
       cacheManager.removeFile(cacheKey),
@@ -448,8 +448,8 @@ class CachedVideoPlayerPlus {
   }) async {
     cacheKey = getCustomCacheKey(cacheKey);
 
-    cacheManager ??= _defaultCacheManager;
-    storage ??= _defaultStorage;
+    cacheManager ??= defaultCacheManager;
+    storage ??= defaultStorage;
 
     await Future.wait([
       cacheManager.removeFile(cacheKey),
@@ -472,8 +472,8 @@ class CachedVideoPlayerPlus {
     CacheManager? cacheManager,
     IVideoPlayerStorage? storage,
   }) async {
-    cacheManager ??= _defaultCacheManager;
-    storage ??= _defaultStorage;
+    cacheManager ??= defaultCacheManager;
+    storage ??= defaultStorage;
 
     await Future.wait([
       cacheManager.emptyCache(),
@@ -511,8 +511,8 @@ class CachedVideoPlayerPlus {
     CacheManager? cacheManager,
     IVideoPlayerStorage? storage,
   }) async {
-    cacheManager ??= _defaultCacheManager;
-    storage ??= _defaultStorage;
+    cacheManager ??= defaultCacheManager;
+    storage ??= defaultStorage;
 
     final effectiveCacheKey = cacheKey != null
         ? getCustomCacheKey(cacheKey)
