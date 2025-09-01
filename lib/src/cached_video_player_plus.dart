@@ -53,7 +53,8 @@ class CachedVideoPlayerPlus {
         invalidateCacheIfOlderThan = Duration.zero,
         skipCache = true,
         _cacheKey = '',
-        _cacheManager = _defaultCacheManager;
+        _cacheManager = _defaultCacheManager,
+        _storage = _defaultStorage;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a network URL.
   ///
@@ -96,6 +97,7 @@ class CachedVideoPlayerPlus {
     this.skipCache = false,
     String? cacheKey,
     CacheManager? cacheManager,
+    IVideoPlayerStorage? storage,
   })  : dataSource = url.toString(),
         dataSourceType = DataSourceType.network,
         package = null,
@@ -103,7 +105,8 @@ class CachedVideoPlayerPlus {
         _cacheKey = cacheKey != null
             ? getCustomCacheKey(cacheKey)
             : getCacheKey(url.toString()),
-        _cacheManager = cacheManager ?? _defaultCacheManager;
+        _cacheManager = cacheManager ?? _defaultCacheManager,
+        _storage = storage ?? _defaultStorage;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a file.
   ///
@@ -126,7 +129,8 @@ class CachedVideoPlayerPlus {
         invalidateCacheIfOlderThan = Duration.zero,
         skipCache = true,
         _cacheKey = '',
-        _cacheManager = _defaultCacheManager;
+        _cacheManager = _defaultCacheManager,
+        _storage = _defaultStorage;
 
   /// Constructs a [CachedVideoPlayerPlus] playing a video from a contentUri.
   ///
@@ -152,7 +156,8 @@ class CachedVideoPlayerPlus {
         invalidateCacheIfOlderThan = Duration.zero,
         skipCache = true,
         _cacheKey = '',
-        _cacheManager = _defaultCacheManager;
+        _cacheManager = _defaultCacheManager,
+        _storage = _defaultStorage;
 
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
@@ -218,6 +223,11 @@ class CachedVideoPlayerPlus {
   /// Defaults to [VideoCacheManager] if not provided.
   final CacheManager _cacheManager;
 
+  /// The [IVideoPlayerStorage] instance used for caching video metadata.
+  ///
+  /// Defaults to [VideoPlayerStorage] if not provided.
+  final IVideoPlayerStorage _storage;
+
   /// The underlying video player controller that handles actual video playback.
   late VideoPlayerController _videoPlayerController;
 
@@ -259,7 +269,7 @@ class CachedVideoPlayerPlus {
   static final _defaultCacheManager = VideoCacheManager();
 
   /// Default storage for cache metadata and expiration timestamps.
-  static final _storage = VideoPlayerStorage();
+  static final _defaultStorage = VideoPlayerStorage();
 
   /// Initializes the video player and sets up caching if applicable.
   ///
@@ -406,15 +416,17 @@ class CachedVideoPlayerPlus {
   static Future<void> removeFileFromCache(
     Uri url, {
     CacheManager? cacheManager,
+    IVideoPlayerStorage? storage,
   }) async {
     final urlString = url.toString();
     final cacheKey = getCacheKey(urlString);
 
     cacheManager ??= _defaultCacheManager;
+    storage ??= _defaultStorage;
 
     await Future.wait([
       cacheManager.removeFile(cacheKey),
-      _storage.remove(cacheKey),
+      storage.remove(cacheKey),
     ]);
   }
 
@@ -432,14 +444,16 @@ class CachedVideoPlayerPlus {
   static Future<void> removeFileFromCacheByKey(
     String cacheKey, {
     CacheManager? cacheManager,
+    IVideoPlayerStorage? storage,
   }) async {
     cacheKey = getCustomCacheKey(cacheKey);
 
     cacheManager ??= _defaultCacheManager;
+    storage ??= _defaultStorage;
 
     await Future.wait([
       cacheManager.removeFile(cacheKey),
-      _storage.remove(cacheKey),
+      storage.remove(cacheKey),
     ]);
   }
 
@@ -454,10 +468,17 @@ class CachedVideoPlayerPlus {
   ///
   /// This operation cannot be undone. All cached videos will need to be
   /// re-downloaded from their original sources.
-  static Future<void> clearAllCache({CacheManager? cacheManager}) async {
+  static Future<void> clearAllCache({
+    CacheManager? cacheManager,
+    IVideoPlayerStorage? storage,
+  }) async {
     cacheManager ??= _defaultCacheManager;
+    storage ??= _defaultStorage;
 
-    await Future.wait([cacheManager.emptyCache(), _storage.erase()]);
+    await Future.wait([
+      cacheManager.emptyCache(),
+      storage.erase(),
+    ]);
   }
 
   /// Pre-caches a video file from the specified [url].
@@ -488,8 +509,10 @@ class CachedVideoPlayerPlus {
     Map<String, String> downloadHeaders = const <String, String>{},
     String? cacheKey,
     CacheManager? cacheManager,
+    IVideoPlayerStorage? storage,
   }) async {
     cacheManager ??= _defaultCacheManager;
+    storage ??= _defaultStorage;
 
     final effectiveCacheKey = cacheKey != null
         ? getCustomCacheKey(cacheKey)
@@ -501,7 +524,7 @@ class CachedVideoPlayerPlus {
     );
 
     if (cachedFile != null) {
-      final cachedElapsedMillis = await _storage.read(effectiveCacheKey);
+      final cachedElapsedMillis = await storage.read(effectiveCacheKey);
 
       bool isCacheExpired = true;
       if (cachedElapsedMillis != null) {
@@ -529,7 +552,7 @@ class CachedVideoPlayerPlus {
         authHeaders: downloadHeaders,
       );
 
-      await _storage.write(
+      await storage.write(
         effectiveCacheKey,
         DateTime.timestamp().millisecondsSinceEpoch,
       );
