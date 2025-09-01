@@ -9,10 +9,6 @@ import 'video_cache_manager.dart';
 import 'video_player_storage.dart';
 import 'i_video_player_storage.dart';
 
-export 'video_cache_manager.dart';
-export 'video_player_storage.dart';
-export 'i_video_player_storage.dart';
-
 /// A video player that wraps [VideoPlayerController] with intelligent
 /// caching capabilities using [flutter_cache_manager].
 ///
