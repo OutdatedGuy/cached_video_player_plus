@@ -57,7 +57,7 @@ class _AdvanceCacheManagementPageState
       maxNrOfCacheObjects: 20,
     ),
   );
-  final _customMetadataStorage = MemoryVideoPlayerMetadataStorage();
+  final _customMetadataStorage = _MemoryVideoPlayerMetadataStorage();
   final _asyncPrefs = SharedPreferencesAsync();
 
   int _selectedIndex = 0;
@@ -372,7 +372,7 @@ class _SmallLoader extends StatelessWidget {
 }
 
 /// Stores video metadata in memory.
-class MemoryVideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
+class _MemoryVideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
   final _data = <String, int>{};
 
   @override
@@ -381,17 +381,17 @@ class MemoryVideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
   }
 
   @override
-  Future<void> write(String key, int value) async {
-    _data[key] = value;
+  Future<void> write(String key, int value) {
+    return Future.sync(() => _data[key] = value);
   }
 
   @override
-  Future<void> remove(String key) async {
-    _data.remove(key);
+  Future<void> remove(String key) {
+    return Future.sync(() => _data.remove(key));
   }
 
   @override
-  Future<void> erase() async {
-    _data.clear();
+  Future<void> erase() {
+    return Future.sync(() => _data.clear());
   }
 }
