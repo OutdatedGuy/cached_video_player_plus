@@ -5,9 +5,9 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:video_player/video_player.dart';
 
 import 'cache_key_helpers.dart';
+import 'i_video_player_metadata_storage.dart';
 import 'video_cache_manager.dart';
-import 'video_player_storage.dart';
-import 'i_video_player_storage.dart';
+import 'video_player_metadata_storage.dart';
 
 /// A video player that wraps [VideoPlayerController] with intelligent
 /// caching capabilities using [flutter_cache_manager].
@@ -402,9 +402,15 @@ class CachedVideoPlayerPlus {
   static final defaultCacheManager = VideoCacheManager();
 
   /// The globally used cache manager for video file caching operations.
+  ///
+  /// Changing this will affect all [CachedVideoPlayerPlus] instances that use
+  /// the default cache manager.
   static CacheManager cacheManager = defaultCacheManager;
 
   /// Default storage for cache metadata and expiration timestamps.
+  ///
+  /// Changing this will affect all [CachedVideoPlayerPlus] instances that use
+  /// the default metadata storage.
   static final defaultMetadataStorage = VideoPlayerMetadataStorage();
 
   /// The globally used storage for video file metadata.

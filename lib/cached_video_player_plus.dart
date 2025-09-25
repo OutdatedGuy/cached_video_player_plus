@@ -17,6 +17,6 @@
 library;
 
 export 'src/cached_video_player_plus.dart';
-export 'src/i_video_player_storage.dart';
+export 'src/i_video_player_metadata_storage.dart';
 export 'src/video_cache_manager.dart';
-export 'src/video_player_storage.dart';
+export 'src/video_player_metadata_storage.dart';
