@@ -62,6 +62,7 @@ class _AdvanceCacheManagementPageState
   int _selectedIndex = 0;
   String _customKey = '';
   bool _forceFetch = false;
+  bool _overrideCacheManager = false;
   bool _isLoading = false;
   bool _isCaching = false;
   bool _isClearing = false;
@@ -205,13 +206,36 @@ class _AdvanceCacheManagementPageState
               ],
             ),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              spacing: 12.0,
+              runSpacing: 12.0,
               children: [
-                const Text('Force fetch latest:'),
-                const SizedBox(width: 12),
-                Switch.adaptive(
-                  value: _forceFetch,
-                  onChanged: (value) => setState(() => _forceFetch = value),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Force fetch latest:'),
+                    const SizedBox(width: 12),
+                    Switch.adaptive(
+                      value: _forceFetch,
+                      onChanged: (value) => setState(() => _forceFetch = value),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Override default cache manager:'),
+                    const SizedBox(width: 12),
+                    Switch.adaptive(
+                      value: _overrideCacheManager,
+                      onChanged: (value) {
+                        CachedVideoPlayerPlus.cacheManager = value
+                            ? _customCacheManager
+                            : CachedVideoPlayerPlus.defaultCacheManager;
+                        setState(() => _overrideCacheManager = value);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
