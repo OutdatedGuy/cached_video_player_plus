@@ -408,12 +408,12 @@ class CachedVideoPlayerPlus {
   static CacheManager cacheManager = defaultCacheManager;
 
   /// Default storage for cache metadata and expiration timestamps.
-  ///
-  /// Changing this will affect all [CachedVideoPlayerPlus] instances that use
-  /// the default metadata storage.
   static final defaultMetadataStorage = VideoPlayerMetadataStorage();
 
   /// The globally used storage for video file metadata.
+  ///
+  /// Changing this will affect all [CachedVideoPlayerPlus] instances that use
+  /// the default metadata storage.
   static IVideoPlayerMetadataStorage metadataStorage = defaultMetadataStorage;
 
   /// Removes the cached file for the specified [url] from the cache.
