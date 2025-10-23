@@ -2,7 +2,6 @@ import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const _keyPrefix = 'cached_video_player_plus_caching_time_of_';
 
@@ -58,7 +57,6 @@ class _AdvanceCacheManagementPageState
     ),
   );
   final _customMetadataStorage = _MemoryVideoPlayerMetadataStorage();
-  final _asyncPrefs = SharedPreferencesAsync();
 
   int _selectedIndex = 0;
   String _customKey = '';
@@ -83,7 +81,8 @@ class _AdvanceCacheManagementPageState
     setState(() => _isLoading = true);
 
     try {
-      final allKeys = await _asyncPrefs.getKeys();
+      final metadataStorage = CachedVideoPlayerPlus.metadataStorage;
+      final allKeys = await metadataStorage.keys;
       final videoKeys = allKeys.where((key) => key.startsWith(_keyPrefix));
 
       final cachedFiles = await Future.wait(
@@ -95,7 +94,7 @@ class _AdvanceCacheManagementPageState
             cachedFile,
             key.replaceFirst(_keyPrefix, ''),
             DateTime.fromMillisecondsSinceEpoch(
-              (await _asyncPrefs.getInt(key))!,
+              (await metadataStorage.read(key))!,
             ),
             await cachedFile.file.length(),
           );
@@ -235,6 +234,7 @@ class _AdvanceCacheManagementPageState
                             ? _customCacheManager
                             : CachedVideoPlayerPlus.defaultCacheManager;
                         setState(() => _overrideCacheManager = value);
+                        _fetchCacheInfo();
                       },
                     ),
                   ],
@@ -251,6 +251,7 @@ class _AdvanceCacheManagementPageState
                             ? _customMetadataStorage
                             : CachedVideoPlayerPlus.defaultMetadataStorage;
                         setState(() => _overrideMetadataStorage = value);
+                        _fetchCacheInfo();
                       },
                     ),
                   ],
