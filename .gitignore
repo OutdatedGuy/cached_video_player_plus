@@ -29,6 +29,7 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 /build/
 /coverage/
+**/devtools_options.yaml
 
 # Development Scripts
 scripts/
