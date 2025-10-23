@@ -19,6 +19,9 @@ class VideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
   factory VideoPlayerMetadataStorage() => _instance;
 
   @override
+  Future<Set<String>> get keys => _asyncPrefs.getKeys();
+
+  @override
   Future<int?> read(String key) {
     return _asyncPrefs.getInt(key);
   }

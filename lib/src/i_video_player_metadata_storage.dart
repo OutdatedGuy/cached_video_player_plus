@@ -1,5 +1,10 @@
+import 'dart:async' show FutureOr;
+
 /// An interface class for storing video metadata.
 abstract interface class IVideoPlayerMetadataStorage {
+  /// Obtains stored keys from the storage.
+  FutureOr<Set<String>> get keys;
+
   /// Reads the cached video duration in milliseconds from storage.
   ///
   /// Returns the stored value for the given [key], or null if not found.

@@ -376,6 +376,9 @@ class _MemoryVideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
   final _data = <String, int>{};
 
   @override
+  Set<String> get keys => _data.keys.toSet();
+
+  @override
   Future<int?> read(String key) {
     return Future.value(_data[key]);
   }
