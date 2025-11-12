@@ -405,6 +405,10 @@ class CachedVideoPlayerPlus {
   ///
   /// Changing this will affect all [CachedVideoPlayerPlus] instances that use
   /// the default cache manager.
+  ///
+  /// The field is not thread-safe. It should only be set during app
+  /// initialization before any instances are created, or proper
+  /// synchronization should be implemented.
   static CacheManager cacheManager = defaultCacheManager;
 
   /// Default storage for cache metadata and expiration timestamps.
@@ -414,6 +418,10 @@ class CachedVideoPlayerPlus {
   ///
   /// Changing this will affect all [CachedVideoPlayerPlus] instances that use
   /// the default metadata storage.
+  ///
+  /// The field is not thread-safe. It should only be set during app
+  /// initialization before any instances are created, or proper
+  /// synchronization should be implemented.
   static IVideoPlayerMetadataStorage metadataStorage = defaultMetadataStorage;
 
   /// Removes the cached file for the specified [url] from the cache.
