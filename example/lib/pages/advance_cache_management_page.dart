@@ -87,7 +87,8 @@ class _AdvanceCacheManagementPageState
 
       final cachedFiles = await Future.wait(
         videoKeys.map((key) async {
-          final cachedFile = await _customCacheManager.getFileFromCache(key);
+          final cachedFile =
+              await CachedVideoPlayerPlus.cacheManager.getFileFromCache(key);
           if (cachedFile == null) return null;
 
           return _CachedFileInfo(
@@ -116,7 +117,6 @@ class _AdvanceCacheManagementPageState
       await CachedVideoPlayerPlus.preCacheVideo(
         Uri.parse(_videoUrls[_selectedIndex].url),
         cacheKey: _customKey,
-        cacheManager: _customCacheManager,
         invalidateCacheIfOlderThan:
             _forceFetch ? Duration.zero : const Duration(days: 42),
       );
@@ -131,9 +131,7 @@ class _AdvanceCacheManagementPageState
     setState(() => _isClearing = true);
 
     try {
-      await CachedVideoPlayerPlus.clearAllCache(
-        cacheManager: _customCacheManager,
-      );
+      await CachedVideoPlayerPlus.clearAllCache();
     } finally {
       if (mounted) setState(() => _isClearing = false);
       _fetchCacheInfo();
@@ -142,10 +140,7 @@ class _AdvanceCacheManagementPageState
 
   Future<void> _deleteCacheFile(String cacheKey) async {
     try {
-      await CachedVideoPlayerPlus.removeFileFromCacheByKey(
-        cacheKey,
-        cacheManager: _customCacheManager,
-      );
+      await CachedVideoPlayerPlus.removeFileFromCacheByKey(cacheKey);
     } finally {
       _fetchCacheInfo();
     }
