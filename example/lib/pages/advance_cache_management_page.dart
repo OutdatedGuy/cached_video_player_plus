@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
+import '../impl/memory_metadata_storage.dart';
+
 const _keyPrefix = 'cached_video_player_plus_caching_time_of_';
 
 class _VideoInfo {
@@ -56,7 +58,7 @@ class _AdvanceCacheManagementPageState
       maxNrOfCacheObjects: 20,
     ),
   );
-  final _customMetadataStorage = _MemoryVideoPlayerMetadataStorage();
+  final _customMetadataStorage = MemoryVideoPlayerMetadataStorage();
 
   int _selectedIndex = 0;
   String _customKey = '';
@@ -364,33 +366,5 @@ class _SmallLoader extends StatelessWidget {
       dimension: 20,
       child: const CircularProgressIndicator.adaptive(strokeWidth: 2),
     );
-  }
-}
-
-/// Stores video metadata in memory.
-class _MemoryVideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
-  final _data = <String, int>{};
-
-  @override
-  Set<String> get keys => _data.keys.toSet();
-
-  @override
-  Future<int?> read(String key) {
-    return Future.value(_data[key]);
-  }
-
-  @override
-  Future<void> write(String key, int value) {
-    return Future.sync(() => _data[key] = value);
-  }
-
-  @override
-  Future<void> remove(String key) {
-    return Future.sync(() => _data.remove(key));
-  }
-
-  @override
-  Future<void> erase() {
-    return Future.sync(() => _data.clear());
   }
 }
