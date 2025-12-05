@@ -93,8 +93,8 @@ See `cached_video_player_plus` in action across different platforms:
 
 ```yaml
 dependencies:
-  cached_video_player_plus: ^4.0.4
-  video_player: ^2.10.0 # Don't forget this one!
+  cached_video_player_plus: ^4.1.0
+  video_player: ^2.10.1 # Don't forget this one!
 ```
 
 ### 2. Follow `video_player` setup
