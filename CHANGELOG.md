@@ -1,3 +1,10 @@
+## 4.1.0
+
+_Customization power up! 🛠️✨_
+
+- feat: Allow replacing the default implementations of the cache manager and storage. Thanks [@AlexV525](https://github.com/AlexV525) for [#114](https://github.com/OutdatedGuy/cached_video_player_plus/pull/114)
+- docs: Updated funding links and support information
+
 ## 4.0.4
 
 _Bug fixes and Flutter updates! 🐛⚡_
