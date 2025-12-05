@@ -2,7 +2,8 @@ import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../impl/memory_metadata_storage.dart';
 
 const _keyPrefix = 'cached_video_player_plus_caching_time_of_';
 
@@ -57,11 +58,13 @@ class _AdvanceCacheManagementPageState
       maxNrOfCacheObjects: 20,
     ),
   );
-  final _asyncPrefs = SharedPreferencesAsync();
+  final _customMetadataStorage = MemoryVideoPlayerMetadataStorage();
 
   int _selectedIndex = 0;
   String _customKey = '';
   bool _forceFetch = false;
+  bool _overrideCacheManager = false;
+  bool _overrideMetadataStorage = false;
   bool _isLoading = false;
   bool _isCaching = false;
   bool _isClearing = false;
@@ -80,19 +83,21 @@ class _AdvanceCacheManagementPageState
     setState(() => _isLoading = true);
 
     try {
-      final allKeys = await _asyncPrefs.getKeys();
+      final metadataStorage = CachedVideoPlayerPlus.metadataStorage;
+      final allKeys = await metadataStorage.keys;
       final videoKeys = allKeys.where((key) => key.startsWith(_keyPrefix));
 
       final cachedFiles = await Future.wait(
         videoKeys.map((key) async {
-          final cachedFile = await _customCacheManager.getFileFromCache(key);
+          final cachedFile =
+              await CachedVideoPlayerPlus.cacheManager.getFileFromCache(key);
           if (cachedFile == null) return null;
 
           return _CachedFileInfo(
             cachedFile,
             key.replaceFirst(_keyPrefix, ''),
             DateTime.fromMillisecondsSinceEpoch(
-              (await _asyncPrefs.getInt(key))!,
+              (await metadataStorage.read(key))!,
             ),
             await cachedFile.file.length(),
           );
@@ -114,7 +119,6 @@ class _AdvanceCacheManagementPageState
       await CachedVideoPlayerPlus.preCacheVideo(
         Uri.parse(_videoUrls[_selectedIndex].url),
         cacheKey: _customKey,
-        cacheManager: _customCacheManager,
         invalidateCacheIfOlderThan:
             _forceFetch ? Duration.zero : const Duration(days: 42),
       );
@@ -129,9 +133,7 @@ class _AdvanceCacheManagementPageState
     setState(() => _isClearing = true);
 
     try {
-      await CachedVideoPlayerPlus.clearAllCache(
-        cacheManager: _customCacheManager,
-      );
+      await CachedVideoPlayerPlus.clearAllCache();
     } finally {
       if (mounted) setState(() => _isClearing = false);
       _fetchCacheInfo();
@@ -140,10 +142,7 @@ class _AdvanceCacheManagementPageState
 
   Future<void> _deleteCacheFile(String cacheKey) async {
     try {
-      await CachedVideoPlayerPlus.removeFileFromCacheByKey(
-        cacheKey,
-        cacheManager: _customCacheManager,
-      );
+      await CachedVideoPlayerPlus.removeFileFromCacheByKey(cacheKey);
     } finally {
       _fetchCacheInfo();
     }
@@ -205,13 +204,54 @@ class _AdvanceCacheManagementPageState
               ],
             ),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              spacing: 12.0,
+              runSpacing: 12.0,
               children: [
-                const Text('Force fetch latest:'),
-                const SizedBox(width: 12),
-                Switch.adaptive(
-                  value: _forceFetch,
-                  onChanged: (value) => setState(() => _forceFetch = value),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Force fetch latest:'),
+                    const SizedBox(width: 12),
+                    Switch.adaptive(
+                      value: _forceFetch,
+                      onChanged: (value) => setState(() => _forceFetch = value),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Override default cache manager:'),
+                    const SizedBox(width: 12),
+                    Switch.adaptive(
+                      value: _overrideCacheManager,
+                      onChanged: (value) {
+                        CachedVideoPlayerPlus.cacheManager = value
+                            ? _customCacheManager
+                            : CachedVideoPlayerPlus.defaultCacheManager;
+                        setState(() => _overrideCacheManager = value);
+                        _fetchCacheInfo();
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Override default metadata storage:'),
+                    const SizedBox(width: 12),
+                    Switch.adaptive(
+                      value: _overrideMetadataStorage,
+                      onChanged: (value) {
+                        CachedVideoPlayerPlus.metadataStorage = value
+                            ? _customMetadataStorage
+                            : CachedVideoPlayerPlus.defaultMetadataStorage;
+                        setState(() => _overrideMetadataStorage = value);
+                        _fetchCacheInfo();
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
