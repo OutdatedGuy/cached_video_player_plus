@@ -18,6 +18,14 @@ _Like `video_player`, but with a photographic memory and trust issues with the i
 **Drop-in replacement for `video_player`** _(well, mostly - see migration guide!)_  
 **📱 Cross-platform support** _(Android, iOS, macOS, Web\*, Linux\*, Windows\*)_
 
+## 💝 Support the Project
+
+If this package saved you from the eternal spinning wheel of video buffering, consider buying me a coffee! ☕
+
+<a href="https://coff.ee/outdatedguy" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+_Every coffee helps fuel late-night coding sessions and the occasional existential crisis about naming variables._ 🤔☕
+
 ## ✨ What's New in v4
 
 We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted into the digital void! ✨🗑️
@@ -280,14 +288,6 @@ When you call `initialize()`, here's what happens behind the scenes:
 5. **Re-download if stale**: "Yep, time for a refresh!"
 
 The magic happens in the background - your users just see buttery smooth playback! 🧈
-
-## 💝 Support the Project
-
-If this package saved you from the eternal spinning wheel of video buffering, consider buying me a coffee! ☕
-
-<a href="https://www.buymeacoffee.com/Outdatedguy" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
-_Every coffee helps fuel late-night coding sessions and the occasional existential crisis about naming variables._ 🤔☕
 
 ## 📚 Examples
 
