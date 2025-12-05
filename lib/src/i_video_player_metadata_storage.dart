@@ -18,6 +18,6 @@ abstract interface class IVideoPlayerMetadataStorage {
 
   /// Clears all cached video player metadata from storage.
   ///
-  /// This removes all keys that start with [cacheKeyPrefix].
+  /// This removes all keys that start with `cacheKeyPrefix`.
   Future<void> erase();
 }
