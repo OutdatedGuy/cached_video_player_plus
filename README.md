@@ -1,3 +1,23 @@
+<div align="center">
+  <h3>🧠 Created by the developer of Brink: Psychological Warfare</h3>
+  <p>
+    <em>"Can you find the sweet spot between bold and delusional?"</em><br>
+    Support the maintenance of this package by checking out my latest indie game!
+  </p>
+
+  <p>
+    <a href="https://play.google.com/store/apps/details?id=rocks.outdatedguy.brink">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" height="50">
+    </a>
+    &nbsp;
+    <a href="https://apps.apple.com/app/brink-psychological-warfare/id6753995293">
+      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" height="50">
+    </a>
+  </p>
+</div>
+
+---
+
 # Cached Video Player Plus
 
 The [video_player] plugin that went to therapy, worked on its commitment issues, and now actually remembers your videos! 🧠  
