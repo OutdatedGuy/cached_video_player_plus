@@ -20,34 +20,40 @@
 
 # Cached Video Player Plus
 
-The [video_player] plugin that went to therapy, worked on its commitment issues, and now actually remembers your videos! 🧠  
-Powered by the magic of [flutter_cache_manager] - because buffering wheels are so 2010.
+The [video_player] plugin that went to therapy, worked on its commitment issues,
+and now actually remembers your videos! 🧠\
+Powered by the magic of [flutter_cache_manager] - because buffering wheels are
+so 2010.
 
-_Like `video_player`, but with a photographic memory and trust issues with the internet._ 📹✨
+_Like `video_player`, but with a photographic memory and trust issues with the
+internet._ 📹✨
 
-[![pub package][package_svg]][package]
-[![GitHub][license_svg]](LICENSE)
+[![pub package][package_svg]][package] [![GitHub][license_svg]](LICENSE)
 
 <hr />
 
-**Cache videos seamlessly for offline playback**  
-**🚀 Zero buffering on repeat views** _(your users will love you for this!)_  
-**Drop-in replacement for `video_player`** _(well, mostly - see migration guide!)_  
+**Cache videos seamlessly for offline playback**\
+**🚀 Zero buffering on repeat views** _(your users will love you for this!)_\
+**Drop-in replacement for `video_player`** _(well, mostly - see migration
+guide!)_\
 **📱 Cross-platform support** _(Android, iOS, macOS, Web\*, Linux\*, Windows\*)_
 
 ## 💝 Support the Project
 
-If this package saved you from the eternal spinning wheel of video buffering, consider buying me a coffee! ☕
+If this package saved you from the eternal spinning wheel of video buffering,
+consider buying me a coffee! ☕
 
 <a href="https://coff.ee/outdatedguy" target="_blank">
   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="102" width="363" />
 </a>
 
-_Every coffee helps fuel late-night coding sessions and the occasional existential crisis about naming variables._ 🤔☕
+_Every coffee helps fuel late-night coding sessions and the occasional
+existential crisis about naming variables._ 🤔☕
 
 ## ✨ What's New in v4
 
-We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted into the digital void! ✨🗑️
+We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted
+into the digital void! ✨🗑️
 
 - **Cleaner API**: Less boilerplate, more magic
 - **Pre-caching**: Cache videos before you even need them
@@ -59,11 +65,13 @@ We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted int
 >
 > **🚨 BREAKING CHANGES AHEAD!**
 >
-> Version 4 introduces a total API restructuring, adding new features while maintaining all functionality. These changes introduce major breaking changes.
+> Version 4 introduces a total API restructuring, adding new features while
+> maintaining all functionality. These changes introduce major breaking changes.
 
 ## Migrating from v3.x.x?
 
-Don't panic! We've got you covered. Check out our **📖 [Migration Guide]** - it's actually entertaining to read and includes:
+Don't panic! We've got you covered. Check out our **📖 [Migration Guide]** -
+it's actually entertaining to read and includes:
 
 - **Complete API reference changes**
 - **Step-by-step migration instructions**
@@ -74,17 +82,17 @@ Don't panic! We've got you covered. Check out our **📖 [Migration Guide]** - i
 
 See `cached_video_player_plus` in action across different platforms:
 
-| Basic Playback (Android)  | Chewie Integration (iOS)  |
-| :-----------------------: | :-----------------------: |
-| ![Android Basic Playback] | ![iOS Chewie Integration] |
+|             Basic Playback (Android)              |             Chewie Integration (iOS)              |
+| :-----------------------------------------------: | :-----------------------------------------------: |
+| ![Android Basic Playback][Android Basic Playback] | ![iOS Chewie Integration][iOS Chewie Integration] |
 
-| Pre-Caching (macOS)  |
-| :------------------: |
-| ![macOS Pre-Caching] |
+|           Pre-Caching (macOS)           |
+| :-------------------------------------: |
+| ![macOS Pre-Caching][macOS Pre-Caching] |
 
-| Advanced Cache Management (Windows) |
-| :---------------------------------: |
-| ![Windows Advance Cache Management] |
+|                  Advanced Cache Management (Windows)                  |
+| :-------------------------------------------------------------------: |
+| ![Windows Advance Cache Management][Windows Advance Cache Management] |
 
 ## 🚀 Quick Start
 
@@ -98,7 +106,8 @@ dependencies:
 
 ### 2. Follow `video_player` setup
 
-Follow the [video_player setup guide][setup] because we're standing on the shoulders of giants here! 🏔️
+Follow the [video_player setup guide][setup] because we're standing on the
+shoulders of giants here! 🏔️
 
 ### 3. Import and use
 
@@ -170,16 +179,19 @@ class _VideoExampleState extends State<VideoExample> {
 
 > [!NOTE]
 >
-> **Windows & Linux Playback Workaround**: While caching works perfectly on Windows and Linux, video playback requires additional packages:
+> **Windows & Linux Playback Workaround**: While caching works perfectly on
+> Windows and Linux, video playback requires additional packages:
 >
 > - **Windows**: Use [video_player_win] or [video_player_media_kit]
 > - **Linux**: Use [video_player_media_kit]
 >
-> Follow the instructions in the respective package documentation to set up playback.
+> Follow the instructions in the respective package documentation to set up
+> playback.
 
 ### Web Platform Notes
 
-Web doesn't support file caching (because browser security is a party pooper 🎉🚫), but you can hack around it:
+Web doesn't support file caching (because browser security is a party pooper
+🎉🚫), but you can hack around it:
 
 ```dart
 final player = CachedVideoPlayerPlus.networkUrl(
@@ -192,7 +204,10 @@ final player = CachedVideoPlayerPlus.networkUrl(
 
 ### WASM Support ✨
 
-Flutter's WebAssembly (WASM) compilation is now supported! To use WASM compilation, you'll need to override the `get_storage` dependency since the original doesn't support WASM _(because some packages are like that one friend who refuses to upgrade their phone)_:
+Flutter's WebAssembly (WASM) compilation is now supported! To use WASM
+compilation, you'll need to override the `get_storage` dependency since the
+original doesn't support WASM _(because some packages are like that one friend
+who refuses to upgrade their phone)_:
 
 ```yaml
 dependency_overrides:
@@ -206,7 +221,8 @@ dependency_overrides:
 
 ### Pre-caching Videos
 
-Cache videos before your users even know they want them! _(Mind reader level: 100)_
+Cache videos before your users even know they want them! _(Mind reader
+level: 100)_
 
 ```dart
 // Pre-cache a video for instant playback later
@@ -248,9 +264,11 @@ await CachedVideoPlayerPlus.clearAllCache(); // *POOF* 💨
 
 ### 1. `flutter_cache_manager` Override Required
 
-If you're seeing cache files not deleting properly or multiple downloads of the same video:
+If you're seeing cache files not deleting properly or multiple downloads of the
+same video:
 
-**Root Cause**: The `flutter_cache_manager` with the fixed bug is not yet published on pub.dev, so we need to override it in our `pubspec.yaml`.
+**Root Cause**: The `flutter_cache_manager` with the fixed bug is not yet
+published on pub.dev, so we need to override it in our `pubspec.yaml`.
 
 **Solution**: Add the following dependency override to your `pubspec.yaml`:
 
@@ -272,17 +290,22 @@ Sorry folks, HLS streams are like unicorns - beautiful but not cacheable! 🦄
 - ❌ DASH streams
 - ✅ Regular video files (`.mp4`, `.mov`, etc.)
 
-**Workaround**: Use progressive download URLs instead of streaming URLs when possible.
+**Workaround**: Use progressive download URLs instead of streaming URLs when
+possible.
 
 [Related Issue #22][issue #22]
 
 ### 3. Videos Saved as .bin Files
 
-If your cached videos show up as `.bin` files instead of proper video files, here's the community-tested workaround:
+If your cached videos show up as `.bin` files instead of proper video files,
+here's the community-tested workaround:
 
-**Root Cause**: The issue occurs when servers don't provide proper `Content-Type` headers for video files, causing `flutter_cache_manager` to save them with generic `.bin` extensions.
+**Root Cause**: The issue occurs when servers don't provide proper
+`Content-Type` headers for video files, causing `flutter_cache_manager` to save
+them with generic `.bin` extensions.
 
-**Solution**: Override the file extension in your `flutter_cache_manager` configuration:
+**Solution**: Override the file extension in your `flutter_cache_manager`
+configuration:
 
 ```yaml
 dependency_overrides:
@@ -306,7 +329,8 @@ When you call `initialize()`, here's what happens behind the scenes:
 4. **Check expiry**: "Is this video older than my last haircut?"
 5. **Re-download if stale**: "Yep, time for a refresh!"
 
-The magic happens in the background - your users just see buttery smooth playback! 🧈
+The magic happens in the background - your users just see buttery smooth
+playback! 🧈
 
 ## 📚 Examples
 
@@ -319,30 +343,35 @@ Check out our [example app](example/) for real-world usage patterns:
 
 ## 🤝 Contributing
 
-Found a bug? Have a feature request? Want to add more easter eggs to our documentation?
+Found a bug? Have a feature request? Want to add more easter eggs to our
+documentation?
 
 1. [Check existing issues][issues]
 2. [Report bugs][issues_report_bug]
 3. [Request features][issues_request_feature]
 4. [Submit PRs][pull_requests]
 
-_All contributions welcome! Even if it's just fixing our terrible jokes in the docs._ 😅
+_All contributions welcome! Even if it's just fixing our terrible jokes in the
+docs._ 😅
 
 ## 📜 License
 
 BSD 3-Clause License - see [LICENSE](LICENSE) file for details.
 
-_TL;DR: Use it, modify it, share it, just don't blame us if your cat videos take over the world._ 🐱🌍
+_TL;DR: Use it, modify it, share it, just don't blame us if your cat videos take
+over the world._ 🐱🌍
 
 ## If you liked the package, then please give it a [Like 👍🏼][package] and [Star ⭐][repository]
 
-_Your support keeps this project alive and helps us add more features (and terrible puns)!_ ✨
+_Your support keeps this project alive and helps us add more features (and
+terrible puns)!_ ✨
 
 ---
 
 ## 🎁 Bonus: Secret Message
 
-_For the curious developers who love Easter eggs, here's a special message for you. Decode it if you dare!_ 🕵️‍♂️
+_For the curious developers who love Easter eggs, here's a special message for
+you. Decode it if you dare!_ 🕵️‍♂️
 
 <details>
 <summary>&nbsp; 🔍 Click to reveal the secret message</summary>
