@@ -29,7 +29,7 @@ jobs:
       - run: flutter --version
 
       - name: Cache Pub dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.pub-cache/hosted
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
@@ -56,7 +56,7 @@ jobs:
       - run: flutter --version
 
       - name: Cache Pub dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.pub-cache/hosted
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
