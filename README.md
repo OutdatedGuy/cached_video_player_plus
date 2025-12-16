@@ -82,17 +82,17 @@ it's actually entertaining to read and includes:
 
 See `cached_video_player_plus` in action across different platforms:
 
-|             Basic Playback (Android)              |             Chewie Integration (iOS)              |
-| :-----------------------------------------------: | :-----------------------------------------------: |
-| ![Android Basic Playback][Android Basic Playback] | ![iOS Chewie Integration][iOS Chewie Integration] |
+| Basic Playback (Android)  | Chewie Integration (iOS)  |
+| :-----------------------: | :-----------------------: |
+| ![Android Basic Playback] | ![iOS Chewie Integration] |
 
-|           Pre-Caching (macOS)           |
-| :-------------------------------------: |
-| ![macOS Pre-Caching][macOS Pre-Caching] |
+| Pre-Caching (macOS)  |
+| :------------------: |
+| ![macOS Pre-Caching] |
 
-|                  Advanced Cache Management (Windows)                  |
-| :-------------------------------------------------------------------: |
-| ![Windows Advance Cache Management][Windows Advance Cache Management] |
+| Advanced Cache Management (Windows) |
+| :---------------------------------: |
+| ![Windows Advance Cache Management] |
 
 ## 🚀 Quick Start
 
