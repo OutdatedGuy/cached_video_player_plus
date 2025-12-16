@@ -28,14 +28,6 @@ jobs:
           cache: true
       - run: flutter --version
 
-      - name: Cache Pub dependencies
-        uses: actions/cache@v5
-        with:
-          path: ~/.pub-cache/hosted
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
-
       - name: Install dependencies
         run: flutter pub get
 
@@ -54,14 +46,6 @@ jobs:
           channel: "stable"
           cache: true
       - run: flutter --version
-
-      - name: Cache Pub dependencies
-        uses: actions/cache@v5
-        with:
-          path: ~/.pub-cache/hosted
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
 
       - name: Install dependencies
         run: flutter pub get
