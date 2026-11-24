@@ -688,12 +688,12 @@ class _VideoPlayerExampleState extends State<VideoPlayerExample> {
     // Example with new v4 features
     _player = CachedVideoPlayerPlus.networkUrl(
       Uri.parse(
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
       ),
       // Default is now 69 days, set to 30 if you want old v3.x.x behavior
       invalidateCacheIfOlderThan: const Duration(days: 30),
       // New v4 feature: custom cache key
-      cacheKey: 'big_buck_bunny_demo',
+      cacheKey: 'bee_demo',
       // New v4 feature: separate download headers
       httpHeaders: {
         'User-Agent': 'MyApp/1.0',

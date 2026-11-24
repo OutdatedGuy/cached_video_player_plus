@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _player = CachedVideoPlayerPlus.networkUrl(
       Uri.parse(
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
       ),
       invalidateCacheIfOlderThan: const Duration(minutes: 69),
     );

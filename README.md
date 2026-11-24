@@ -134,7 +134,7 @@ class _VideoExampleState extends State<VideoExample> {
     super.initState();
 
     _player = CachedVideoPlayerPlus.networkUrl(
-      Uri.parse('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'),
+      Uri.parse('https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
       invalidateCacheIfOlderThan: const Duration(minutes: 69), // Nice!
     );
 

@@ -35,20 +35,12 @@ class _AdvanceCacheManagementPageState
     extends State<AdvanceCacheManagementPage> {
   final _videoUrls = [
     _VideoInfo(
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-      'For Bigger Fun',
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      'Bee',
     ),
     _VideoInfo(
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-      'Sintel',
-    ),
-    _VideoInfo(
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-      'Tears of Steel',
-    ),
-    _VideoInfo(
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
-      'What Car Can You Get For A Grand',
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+      'Butterfly',
     ),
   ];
   final _customCacheManager = CacheManager(

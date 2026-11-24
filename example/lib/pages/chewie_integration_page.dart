@@ -22,7 +22,7 @@ class _ChewieIntegrationPageState extends State<ChewieIntegrationPage> {
 
     _player = CachedVideoPlayerPlus.networkUrl(
       Uri.parse(
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
       ),
       invalidateCacheIfOlderThan: const Duration(days: 42),
     );

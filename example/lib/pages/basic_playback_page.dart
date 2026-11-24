@@ -22,7 +22,7 @@ class _BasicPlaybackPageState extends State<BasicPlaybackPage> {
 
     _player = CachedVideoPlayerPlus.networkUrl(
       Uri.parse(
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
       ),
       invalidateCacheIfOlderThan: const Duration(days: 42),
     );
@@ -115,8 +115,8 @@ class _BasicPlaybackPageState extends State<BasicPlaybackPage> {
                           }
                         },
                         tooltip: _controller.value.isPlaying
-                            ? 'Pause (give the bunny a break)'
-                            : 'Play (let the bunny run!)',
+                            ? 'Pause (give the bee a break)'
+                            : 'Play (let the bee fly!)',
                       ),
                       IconButton(
                         icon: const Icon(Icons.forward_10),
@@ -148,8 +148,8 @@ class _BasicPlaybackPageState extends State<BasicPlaybackPage> {
                           _controller.setLooping(!_controller.value.isLooping);
                         },
                         tooltip: _controller.value.isLooping
-                            ? 'Looping: ON (bunny marathon)'
-                            : 'Looping: OFF (one hop only)',
+                            ? 'Looping: ON (bee marathon)'
+                            : 'Looping: OFF (one flower only)',
                       ),
                       Row(
                         children: [
@@ -168,7 +168,7 @@ class _BasicPlaybackPageState extends State<BasicPlaybackPage> {
                             },
                             tooltip: _controller.value.volume > 0
                                 ? 'Mute (shhh...)'
-                                : 'Unmute (let the bunny speak!)',
+                                : 'Unmute (let the bee buzz!)',
                           ),
                           Slider(
                             value: _controller.value.volume,
