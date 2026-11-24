@@ -24,7 +24,7 @@ dependencies:
   chewie: ^1.12.1
   flutter:
     sdk: flutter
-  flutter_cache_manager: ^3.4.1
+  flutter_cache_manager: ^3.5.0
   material_ui: ^1.11.1
   media_kit_libs_linux: ^1.2.1
   media_kit_libs_windows_video: ^1.0.11
@@ -33,11 +33,6 @@ dependencies:
   video_player_media_kit: ^1.0.6
 
 dependency_overrides:
-  flutter_cache_manager:
-    git:
-      url: https://github.com/Baseflow/flutter_cache_manager.git
-      path: flutter_cache_manager
-      ref: 54904e499a06d0364a2b3f4ca9789e5f829f1879
   get_storage:
     git:
       url: https://github.com/OutdatedGuy/get_storage.git

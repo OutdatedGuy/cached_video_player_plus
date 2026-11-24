@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_cache_manager: ^3.4.1
+  flutter_cache_manager: ^3.5.0
   # TODO(OutdatedGuy): Remove after v6.0.0 migration period
   get_storage: ^2.1.1
   shared_preferences: ^2.5.3
