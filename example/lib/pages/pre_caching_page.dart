@@ -24,25 +24,18 @@ class PreCachingPage extends StatefulWidget {
 class _PreCachingPageState extends State<PreCachingPage> {
   final List<_VideoInfo> _videos = [
     _VideoInfo(
-      title: 'Big Buck Bunny',
+      title: 'Bee',
       url: Uri.parse(
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
       ),
-      size: '158 MB',
+      size: '1.3 MB',
     ),
     _VideoInfo(
-      title: 'Elephant Dream',
+      title: 'Butterfly',
       url: Uri.parse(
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
       ),
-      size: '169 MB',
-    ),
-    _VideoInfo(
-      title: 'For Bigger Blazes',
-      url: Uri.parse(
-        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-      ),
-      size: '2.5 MB',
+      size: '2.4 MB',
     ),
   ];
 
@@ -130,8 +123,8 @@ class _PreCachingPageState extends State<PreCachingPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Tip: Pre-caching means less buffering, more bunny hopping!\n'
-              '(And if you clear the cache, the bunny gets a fresh start 🐰)',
+              'Tip: Pre-caching means less buffering, more bee flying!\n'
+              '(And if you clear the cache, the bee starts fresh 🐝)',
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
