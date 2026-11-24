@@ -32,12 +32,6 @@ dependencies:
   video_player: ^2.10.0
   video_player_media_kit: ^1.0.6
 
-dependency_overrides:
-  get_storage:
-    git:
-      url: https://github.com/OutdatedGuy/get_storage.git
-      ref: rewrite
-
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

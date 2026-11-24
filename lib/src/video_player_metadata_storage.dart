@@ -3,8 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'cache_key_helpers.dart' show cacheKeyPrefix;
 import 'i_video_player_metadata_storage.dart';
 
-/// This class handles the storage of cache expiration timestamps and provides
-/// migration functionality from get_storage to shared_preferences.
+/// This class handles the storage of cache expiration timestamps.
 class VideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
   /// SharedPreferences instance for storing cache metadata.
   final _asyncPrefs = SharedPreferencesAsync();
