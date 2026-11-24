@@ -1,5 +1,5 @@
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:video_player/video_player.dart';
 
 class _VideoInfo {
@@ -86,7 +86,7 @@ class _PreCachingPageState extends State<PreCachingPage> {
                 _selectedVideo == null
                     ? 'No video playing. (The suspense is killing me!)'
                     : 'Now playing: ${_selectedVideo!.title} '
-                        'from "${_dataSourceType?.name}"',
+                          'from "${_dataSourceType?.name}"',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
@@ -101,7 +101,7 @@ class _PreCachingPageState extends State<PreCachingPage> {
                     : Container(
                         alignment: Alignment.center,
                         color: Colors.black,
-                        child: Text(
+                        child: const Text(
                           '🦄 Waiting for action...\n'
                           '(press play, don\'t be shy!)',
                           style: TextStyle(color: Colors.white70, fontSize: 16),
@@ -118,7 +118,7 @@ class _PreCachingPageState extends State<PreCachingPage> {
             Expanded(
               child: ListView.separated(
                 itemCount: _videos.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final videoInfo = _videos[index];
                   return _VideoOptionTile(
@@ -146,9 +146,9 @@ class _PreCachingPageState extends State<PreCachingPage> {
 class _SmallLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
+    return const SizedBox.square(
       dimension: 20,
-      child: const CircularProgressIndicator.adaptive(strokeWidth: 2),
+      child: CircularProgressIndicator.adaptive(strokeWidth: 2),
     );
   }
 }
@@ -182,8 +182,9 @@ class _VideoOptionTileState extends State<_VideoOptionTile> {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             child: Flex(
               direction: isWide ? Axis.horizontal : Axis.vertical,
-              crossAxisAlignment:
-                  isWide ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+              crossAxisAlignment: isWide
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
@@ -212,16 +213,16 @@ class _VideoOptionTileState extends State<_VideoOptionTile> {
                       icon: _isPreCaching
                           ? _SmallLoader()
                           : _isPreCached
-                              ? const Icon(Icons.check_circle,
-                                  color: Colors.green)
-                              : const Icon(Icons.download),
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : const Icon(Icons.download),
                       label: _isPreCaching
                           ? const Text('Caching...')
                           : _isPreCached
-                              ? const Text('Cached')
-                              : const Text('Cache'),
-                      onPressed:
-                          _isPreCaching || _isPreCached ? null : _cacheVideo,
+                          ? const Text('Cached')
+                          : const Text('Cache'),
+                      onPressed: _isPreCaching || _isPreCached
+                          ? null
+                          : _cacheVideo,
                     ),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(

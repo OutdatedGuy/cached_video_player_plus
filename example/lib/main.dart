@@ -1,5 +1,5 @@
 import 'package:cached_video_player_plus/util/migration_utils.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 import 'pages/advance_cache_management_page.dart';
@@ -78,8 +78,9 @@ class HomePage extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final crossAxisCount = constraints.maxWidth > 700 ? 2 : 1;
-                    final childAspectRatio =
-                        constraints.maxWidth > 1000 ? 4.5 : 3.14;
+                    final childAspectRatio = constraints.maxWidth > 1000
+                        ? 4.5
+                        : 3.14;
 
                     return GridView.count(
                       crossAxisCount: crossAxisCount,
@@ -89,8 +90,7 @@ class HomePage extends StatelessWidget {
                       children: [
                         _FeatureCard(
                           title: 'Basic Playback',
-                          subtitle:
-                              'Network video with caching (because we are not in 2010! 📡)',
+                          subtitle: 'Network video with caching (because we are not in 2010! 📡)',
                           icon: Icons.play_circle,
                           color: Colors.blue,
                           onTap: () =>
@@ -98,8 +98,7 @@ class HomePage extends StatelessWidget {
                         ),
                         _FeatureCard(
                           title: 'Chewie Integration',
-                          subtitle:
-                              'Rich video player UI with caching (beauty meets performance! 🎬)',
+                          subtitle: 'Rich video player UI with caching (beauty meets performance! 🎬)',
                           icon: Icons.video_library,
                           color: Colors.orange,
                           onTap: () => _navigateTo(
@@ -109,8 +108,7 @@ class HomePage extends StatelessWidget {
                         ),
                         _FeatureCard(
                           title: 'Pre-Cache Videos',
-                          subtitle:
-                              'Download videos for offline viewing (like hoarding, but useful! 📦)',
+                          subtitle: 'Download videos for offline viewing (like hoarding, but useful! 📦)',
                           icon: Icons.download,
                           color: Colors.purple,
                           onTap: () =>
@@ -118,8 +116,7 @@ class HomePage extends StatelessWidget {
                         ),
                         _FeatureCard(
                           title: 'Advance Cache Management',
-                          subtitle:
-                              'Clear cache and manage storage (Marie Kondo for your app! ✨)',
+                          subtitle: 'Clear cache and manage storage (Marie Kondo for your app! ✨)',
                           icon: Icons.storage,
                           color: Colors.red,
                           onTap: () => _navigateTo(
@@ -140,7 +137,10 @@ class HomePage extends StatelessWidget {
   }
 
   void _navigateTo(BuildContext context, Widget page) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (context) => page),
+    );
   }
 }
 
@@ -189,10 +189,8 @@ class _FeatureCard extends StatelessWidget {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         title,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
                     const SizedBox(height: 4),
