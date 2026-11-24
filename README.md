@@ -262,26 +262,7 @@ await CachedVideoPlayerPlus.clearAllCache(); // *POOF* 💨
 
 ## 🚨 Known Issues _(aka "It's not a bug, it's a feature!")_
 
-### 1. `flutter_cache_manager` Override Required
-
-If you're seeing cache files not deleting properly or multiple downloads of the
-same video:
-
-**Root Cause**: The `flutter_cache_manager` with the fixed bug is not yet
-published on pub.dev, so we need to override it in our `pubspec.yaml`.
-
-**Solution**: Add the following dependency override to your `pubspec.yaml`:
-
-```yaml
-dependency_overrides:
-  flutter_cache_manager:
-    git:
-      url: https://github.com/Baseflow/flutter_cache_manager.git
-      path: flutter_cache_manager
-      ref: 54904e499a06d0364a2b3f4ca9789e5f829f1879
-```
-
-### 2. HLS and Streaming Videos Not Supported
+### HLS and Streaming Videos Not Supported
 
 Sorry folks, HLS streams are like unicorns - beautiful but not cacheable! 🦄
 
@@ -295,7 +276,7 @@ possible.
 
 [Related Issue #22][issue #22]
 
-### 3. Videos Saved as .bin Files
+### Videos Saved as .bin Files
 
 If your cached videos show up as `.bin` files instead of proper video files,
 here's the community-tested workaround:
