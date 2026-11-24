@@ -25,6 +25,6 @@ class MemoryVideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
 
   @override
   Future<void> erase() {
-    return Future.sync(() => _data.clear());
+    return Future.sync(_data.clear);
   }
 }

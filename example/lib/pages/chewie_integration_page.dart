@@ -1,6 +1,6 @@
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:chewie/chewie.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:video_player/video_player.dart';
 
 class ChewieIntegrationPage extends StatefulWidget {
@@ -35,7 +35,6 @@ class _ChewieIntegrationPageState extends State<ChewieIntegrationPage> {
         _chewieController = ChewieController(
           videoPlayerController: _controller,
           autoPlay: true,
-          looping: false,
           // You can add more Chewie options here if you want to get fancy
         );
       });

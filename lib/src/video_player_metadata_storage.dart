@@ -27,12 +27,12 @@ class VideoPlayerMetadataStorage implements IVideoPlayerMetadataStorage {
   }
 
   @override
-  Future<void> write(String key, int value) async {
+  Future<void> write(String key, int value) {
     return _asyncPrefs.setInt(key, value);
   }
 
   @override
-  Future<void> remove(String key) async {
+  Future<void> remove(String key) {
     return _asyncPrefs.remove(key);
   }
 

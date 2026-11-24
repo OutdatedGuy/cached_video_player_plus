@@ -74,7 +74,7 @@ Future<void> migrateCachedVideoDataToSharedPreferences() async {
 
     // Migrate each key-value pair
     for (final key in getStorageKeys) {
-      final value = getStorage.read(key);
+      final value = getStorage.read<dynamic>(key);
       if (value is int) {
         await asyncPrefs.setInt(
           key.replaceFirst(oldCacheKeyPrefix, cacheKeyPrefix),

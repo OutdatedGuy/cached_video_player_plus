@@ -5,7 +5,7 @@ description: "Demonstrates how to use the cached_video_player_plus package."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.13.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -25,6 +25,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_cache_manager: ^3.4.1
+  material_ui: ^1.11.1
   media_kit_libs_linux: ^1.2.1
   media_kit_libs_windows_video: ^1.0.11
   shared_preferences: ^2.5.3

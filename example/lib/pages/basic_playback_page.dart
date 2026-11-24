@@ -1,5 +1,5 @@
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:video_player/video_player.dart';
 
 class BasicPlaybackPage extends StatefulWidget {
@@ -123,8 +123,7 @@ class _BasicPlaybackPageState extends State<BasicPlaybackPage> {
                         onPressed: () {
                           _seekBy(const Duration(seconds: 10));
                         },
-                        tooltip:
-                            'Forward 10 seconds (time travel, but only forward)',
+                        tooltip: 'Forward 10 seconds (time travel, but only forward)',
                       ),
                       IconButton(
                         icon: const Icon(Icons.last_page),
@@ -189,7 +188,7 @@ class _BasicPlaybackPageState extends State<BasicPlaybackPage> {
                 ],
               ),
             )
-          : Center(child: const CircularProgressIndicator()),
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 }

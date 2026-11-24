@@ -1,7 +1,7 @@
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../impl/memory_metadata_storage.dart';
 
@@ -89,8 +89,8 @@ class _AdvanceCacheManagementPageState
 
       final cachedFiles = await Future.wait(
         videoKeys.map((key) async {
-          final cachedFile =
-              await CachedVideoPlayerPlus.cacheManager.getFileFromCache(key);
+          final cachedFile = await CachedVideoPlayerPlus.cacheManager
+              .getFileFromCache(key);
           if (cachedFile == null) return null;
 
           return _CachedFileInfo(
@@ -119,8 +119,9 @@ class _AdvanceCacheManagementPageState
       await CachedVideoPlayerPlus.preCacheVideo(
         Uri.parse(_videoUrls[_selectedIndex].url),
         cacheKey: _customKey,
-        invalidateCacheIfOlderThan:
-            _forceFetch ? Duration.zero : const Duration(days: 42),
+        invalidateCacheIfOlderThan: _forceFetch
+            ? Duration.zero
+            : const Duration(days: 42),
       );
     } finally {
       if (mounted) setState(() => _isCaching = false);
@@ -266,8 +267,9 @@ class _AdvanceCacheManagementPageState
                       ? _SmallLoader()
                       : const Icon(Icons.cloud_download),
                   label: const Text('Cache It'),
-                  onPressed:
-                      _isReady && _customKey.isNotEmpty ? _cacheVideo : null,
+                  onPressed: _isReady && _customKey.isNotEmpty
+                      ? _cacheVideo
+                      : null,
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(foregroundColor: Colors.red),
@@ -297,14 +299,12 @@ class _AdvanceCacheManagementPageState
             ),
             const Divider(height: 25),
             if (_cachedFiles.isEmpty)
-              Expanded(
-                child: const Center(child: Text('No cached files found.')),
+              const Expanded(
+                child: Center(child: Text('No cached files found.')),
               )
             else if (_isLoading)
-              Expanded(
-                child: const Center(
-                  child: CircularProgressIndicator.adaptive(),
-                ),
+              const Expanded(
+                child: Center(child: CircularProgressIndicator.adaptive()),
               )
             else
               Expanded(
@@ -362,9 +362,9 @@ class _AdvanceCacheManagementPageState
 class _SmallLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
+    return const SizedBox.square(
       dimension: 20,
-      child: const CircularProgressIndicator.adaptive(strokeWidth: 2),
+      child: CircularProgressIndicator.adaptive(strokeWidth: 2),
     );
   }
 }
