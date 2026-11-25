@@ -1,6 +1,6 @@
 name: cached_video_player_plus
 description: "The video_player plugin with the SUPER-POWER of caching using flutter_cache_manager."
-version: 4.1.0
+version: 5.0.0
 homepage: https://outdatedguy.rocks
 repository: https://github.com/OutdatedGuy/cached_video_player_plus
 topics:
