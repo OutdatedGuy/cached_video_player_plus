@@ -1,3 +1,20 @@
+# 5.0.0
+
+> [!TIP]
+>
+> See the [v4-to-v5 migration guide](MIGRATION-v4-to-v5.md) for details on migrating from v4 to v5.
+
+## Breaking Changes
+
+- Removed `migrateCachedVideoDataToSharedPreferences()` and `util/migration_utils.dart`.
+
+## Changes
+
+- Removed the `get_storage` dependency.
+- Raised minimum `flutter_cache_manager` to `3.5.0`, fixing `.bin`, deletion, and duplicate download issues.
+- `dependency_overrides` for `get_storage` and `flutter_cache_manager` are no longer needed.
+- Rewrote README and migration documentation.
+
 ## 4.1.0
 
 _Customization power up! 🛠️✨_

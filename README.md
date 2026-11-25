@@ -74,7 +74,7 @@ Add the package and `video_player` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  cached_video_player_plus: ^4.1.0
+  cached_video_player_plus: ^5.0.0
   video_player: ^2.10.1
 ```
 
