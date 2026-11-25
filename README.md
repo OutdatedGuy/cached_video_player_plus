@@ -34,9 +34,9 @@
 
 [![pub package][package_svg]][package] [![GitHub][license_svg]](LICENSE)
 
-`cached_video_player_plus` wraps [`video_player`][video_player] and caches network
-videos with [`flutter_cache_manager`][flutter_cache_manager]. Cached videos can
-be played from local storage when available.
+The [video_player] plugin with the SUPER-POWER of caching using
+[flutter_cache_manager]. Cached videos can be played from local storage when
+available.
 
 ## Migration from v3
 
