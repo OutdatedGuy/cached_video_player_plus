@@ -121,8 +121,8 @@ body:
       placeholder: |
         ```dart
         // Paste your minimal reproduction code here
-        import 'package:flutter/material.dart';
         import 'package:cached_video_player_plus/cached_video_player_plus.dart';
+        import 'package:material_ui/material_ui.dart';
 
         // Your code that reproduces the issue...
         ```
