@@ -49,6 +49,10 @@ _Just some housekeeping! 🧹✨_
 
 _We Marie Kondo'd the entire API! Everything that didn't spark joy got yeeted into the digital void! ✨🗑️_
 
+> [!TIP]
+>
+> See the [v3-to-v4 migration guide](MIGRATION-v3-to-v4.md) for details on migrating from v3 to v4.
+
 **BREAKING CHANGES**
 
 - Complete API restructure: `CachedVideoPlayerPlusController` replaced with class-based `CachedVideoPlayerPlus` approach

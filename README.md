@@ -38,10 +38,10 @@ The [video_player] plugin with the SUPER-POWER of caching using
 [flutter_cache_manager]. Cached videos can be played from local storage when
 available.
 
-## Migration from v3
+## Migration from v4
 
-Version 4 changes the player API and metadata storage. See the
-[v3-to-v4 migration guide][migration_guide] for the changes and migration steps.
+Version 5 removes the v3-to-v4 migration utility. See the
+[v4-to-v5 migration guide][migration_guide] for the changes and migration steps.
 
 ## Features
 
@@ -293,7 +293,7 @@ progressive video file URLs when caching is required. See [issue #22][issue_22].
 [video_player_win]: https://pub.dev/packages/video_player_win
 [video_player_media_kit]: https://pub.dev/packages/video_player_media_kit
 [setup]: https://pub.dev/packages/video_player#setup
-[migration_guide]: MIGRATION-v3-to-v4.md
+[migration_guide]: MIGRATION-v4-to-v5.md
 [issue_22]: https://github.com/OutdatedGuy/cached_video_player_plus/issues/22
 
 <!-- Demos -->
